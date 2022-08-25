@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"base/internal/base/mgo/filter"
-	"base/internal/base/mlog"
-	"base/internal/base/model"
+	"eclectric/internal/base/mgo/filter"
+	"eclectric/internal/base/mlog"
+	"eclectric/internal/base/model"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"

@@ -1,10 +1,10 @@
 package mgo
 
 import (
-	"base/internal/base/mgo/db"
-	"base/internal/base/mgo/filter"
-	"base/internal/base/model"
 	"context"
+	"eclectric/internal/base/mgo/db"
+	"eclectric/internal/base/mgo/filter"
+	"eclectric/internal/base/model"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"

@@ -19,6 +19,14 @@ func (r *JsonRender) SendData(ctx *gin.Context, data interface{}) {
 	})
 }
 
+func (r *JsonRender) SendErrorForce(ctx *gin.Context, err error, statusCode int) {
+	ctx.JSON(statusCode, map[string]interface{}{
+		"data":   err.Error(),
+		"status": "error",
+		"code":   statusCode,
+	})
+}
+
 func (r *JsonRender) SendString(ctx *gin.Context, data interface{}) {
 	ctx.JSON(http.StatusOK, data)
 }
@@ -37,9 +45,9 @@ func (r *JsonRender) SendDataNotFound(ctx *gin.Context, data interface{}, isNotF
 
 func (r *JsonRender) SendError(ctx *gin.Context, err error) {
 	ctx.JSON(http.StatusOK, map[string]interface{}{
-		"message": err.Error(),
-		"status":  "error",
-		"code":    200,
+		"data":   err.Error(),
+		"status": "error",
+		"code":   200,
 	})
 }
 

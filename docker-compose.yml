@@ -1,0 +1,32 @@
+version: "3"
+services:
+
+  server:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    volumes:
+      - .:/app
+    network_mode: "host"
+    environment:
+      PATH: "mongodb://docker:docker@0.0.0.0:27017"
+      DB_USER: docker
+      DB_PASS: docker
+      DB_NAME: djm-master
+    command: ./app
+    restart: always
+
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - db-data:/var/lib/mongodb/data
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: docker
+      MONGO_INITDB_ROOT_PASSWORD: docker
+    restart: always
+
+volumes:
+  db-data:

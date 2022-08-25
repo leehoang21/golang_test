@@ -1,16 +1,18 @@
 package user
 
 import (
-	"base/internal/handler/filter"
-	"base/internal/model"
-	"base/internal/repository"
 	"context"
+	"eclectric/internal/models"
+	"eclectric/internal/repository"
 
-	"base/internal/utils/validator"
+	"eclectric/internal/utils/validator"
 )
 
-type UserService interface {
-	List(ctx context.Context, f *filter.UserListParams) ([]model.User, error)
+type Service interface {
+	Create(ctx context.Context, user *models.User) (*models.User, error)
+	Update(ctx context.Context, id string, user *models.User) (*models.User, error)
+	Delete(ctx context.Context, id string) error
+	Login(ctx context.Context, input LoginInput) (u *models.User, err error)
 }
 
 type userService struct {
@@ -19,8 +21,8 @@ type userService struct {
 }
 
 func NewUserService(userRepo repository.User,
-	validator validator.Validator) UserService {
-	return userService{
+	validator validator.Validator) Service {
+	return &userService{
 		userRepo:  userRepo,
 		validator: validator,
 	}

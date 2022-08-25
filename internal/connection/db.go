@@ -1,9 +1,9 @@
 package connection
 
 import (
-	"base/config"
-	mgo "base/internal/base/mgo/db"
 	"context"
+	"eclectric/config"
+	mgo "eclectric/internal/base/mgo/db"
 
 	"go.mongodb.org/mongo-driver/mongo"
 )
