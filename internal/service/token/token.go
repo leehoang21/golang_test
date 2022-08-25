@@ -1,0 +1,28 @@
+package token
+
+import (
+	"context"
+	"eclectric/internal/models"
+	"eclectric/internal/repository"
+
+	"eclectric/internal/utils/validator"
+)
+
+type Service interface {
+	Create(ctx context.Context, token *models.Token) (*models.Token, error)
+	RevokeAllByUserID(ctx context.Context, userID string) error
+	RevokeByID(ctx context.Context, id string) error
+}
+
+type tokenService struct {
+	tokenRepo repository.Token
+	validator validator.Validator
+}
+
+func NewTokenService(tokenRepo repository.Token,
+	validator validator.Validator) Service {
+	return &tokenService{
+		tokenRepo: tokenRepo,
+		validator: validator,
+	}
+}
