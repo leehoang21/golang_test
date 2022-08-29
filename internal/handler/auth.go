@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"eclectric/internal/models"
-	"eclectric/internal/service/user"
-	"eclectric/internal/utils/web"
+	"base/internal/models"
+	"base/internal/service/user"
+	"base/internal/utils/web"
 	"fmt"
 
 	"github.com/gin-gonic/gin"

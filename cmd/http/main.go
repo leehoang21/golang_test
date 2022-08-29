@@ -1,19 +1,19 @@
 package main
 
 import (
+	"base/config"
+	"base/internal/handler"
+	_ "base/internal/init"
+	"base/internal/repository/querymgo"
+	"base/internal/router"
+	"base/internal/router/middleware"
+	"base/internal/service/user"
+	"base/internal/utils/validator"
+	"base/internal/utils/web"
 	"context"
-	"eclectric/config"
-	"eclectric/internal/handler"
-	_ "eclectric/internal/init"
-	"eclectric/internal/repository/querymgo"
-	"eclectric/internal/router"
-	"eclectric/internal/router/middleware"
-	"eclectric/internal/service/user"
-	"eclectric/internal/utils/validator"
-	"eclectric/internal/utils/web"
 
-	_ "eclectric/docs"
-	"eclectric/internal/connection"
+	_ "base/docs"
+	"base/internal/connection"
 )
 
 // @title           DJM API

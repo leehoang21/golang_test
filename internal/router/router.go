@@ -1,7 +1,7 @@
 package router
 
 import (
-	"eclectric/internal/router/middleware"
+	"base/internal/router/middleware"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"

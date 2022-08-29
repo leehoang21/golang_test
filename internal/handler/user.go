@@ -1,10 +1,10 @@
 package handler
 
 import (
-	"eclectric/internal/models"
-	"eclectric/internal/service/token"
-	"eclectric/internal/service/user"
-	"eclectric/internal/utils/web"
+	"base/internal/models"
+	"base/internal/service/token"
+	"base/internal/service/user"
+	"base/internal/utils/web"
 
 	"github.com/gin-gonic/gin"
 )

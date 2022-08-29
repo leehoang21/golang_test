@@ -1,8 +1,8 @@
 package models
 
 import (
-	"eclectric/internal/base/model"
-	hashpassword "eclectric/internal/utils/hash_password"
+	"base/internal/base/model"
+	hashpassword "base/internal/utils/hash_password"
 )
 
 type User struct {

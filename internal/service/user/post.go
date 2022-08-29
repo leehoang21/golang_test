@@ -1,9 +1,9 @@
 package user
 
 import (
+	"base/internal/models"
+	"base/internal/utils/web"
 	"context"
-	"eclectric/internal/models"
-	"eclectric/internal/utils/web"
 )
 
 func (s *userService) Create(ctx context.Context, user *models.User) (*models.User, error) {

@@ -1,8 +1,8 @@
 package token
 
 import (
+	"base/internal/models"
 	"context"
-	"eclectric/internal/models"
 )
 
 func (s *tokenService) Create(ctx context.Context, tkInput *models.Token) (*models.Token, error) {

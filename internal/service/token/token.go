@@ -1,11 +1,11 @@
 package token
 
 import (
+	"base/internal/models"
+	"base/internal/repository"
 	"context"
-	"eclectric/internal/models"
-	"eclectric/internal/repository"
 
-	"eclectric/internal/utils/validator"
+	"base/internal/utils/validator"
 )
 
 type Service interface {

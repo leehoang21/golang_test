@@ -1,6 +1,6 @@
 package models
 
-import "eclectric/internal/base/model"
+import "base/internal/base/model"
 
 type Token struct {
 	model.BaseModel `bson:",inline"`

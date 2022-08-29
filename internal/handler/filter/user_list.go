@@ -1,7 +1,7 @@
 package filter
 
 import (
-	"eclectric/internal/base/mgo/filter"
+	"base/internal/base/mgo/filter"
 	//"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )

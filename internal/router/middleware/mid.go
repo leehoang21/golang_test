@@ -1,9 +1,9 @@
 package middleware
 
 import (
-	"eclectric/internal/base/mlog"
-	"eclectric/internal/repository"
-	"eclectric/internal/utils/web"
+	"base/internal/base/mlog"
+	"base/internal/repository"
+	"base/internal/utils/web"
 	"fmt"
 	"net/http"
 	"runtime/debug"

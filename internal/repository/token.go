@@ -1,9 +1,9 @@
 package repository
 
 import (
+	"base/internal/base/mgo"
+	"base/internal/models"
 	"context"
-	"eclectric/internal/base/mgo"
-	"eclectric/internal/models"
 )
 
 type Token interface {

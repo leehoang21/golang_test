@@ -1,10 +1,10 @@
 package querymgo
 
 import (
+	"base/internal/base/mgo/db"
+	"base/internal/models"
+	"base/internal/repository"
 	"context"
-	"eclectric/internal/base/mgo/db"
-	"eclectric/internal/models"
-	"eclectric/internal/repository"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
