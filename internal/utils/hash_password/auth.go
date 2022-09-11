@@ -4,28 +4,31 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type HashPassword interface {
-	GererateHashedPassword() (string, error)
-	ComparePassword(value string) error
-	String() string
-	Set(string)
+// type HashPassword interface {
+// 	GererateHashedPassword() (string, error)
+// 	ComparePassword(value p) error
+// 	String() string
+// 	Set(string)
+// }
+
+type Password string
+
+func NewPassword(pass string) Password {
+	return Password(pass)
 }
-
-type p string
-
-func (p p) GererateHashedPassword() (string, error) {
+func (p Password) GererateHashedPassword() (string, error) {
 	hashed, err := bcrypt.GenerateFromPassword([]byte(p), 10)
 	return string(hashed), err
 }
 
-func (p p) String() string {
+func (p Password) String() string {
 	return string(p)
 }
 
-func (v p) Set(val string) {
-	v = p(val)
+func (v Password) Set(val string) {
+	v = Password(val)
 }
 
-func (pOld p) ComparePassword(pNew p) error {
+func (pOld Password) ComparePassword(pNew Password) error {
 	return bcrypt.CompareHashAndPassword([]byte(pOld), []byte(pNew))
 }

@@ -7,7 +7,7 @@ import (
 // swagger:parameters basicOrder
 type BasicOrder struct {
 	// Field which you want to order by
-	OrderBy []string `json:"order_by" schema:"order_by"`
+	OrderBy []string `json:"order_by" form:"order_by"`
 }
 
 func NewBasicOrder() *BasicOrder {

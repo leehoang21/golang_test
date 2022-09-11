@@ -2,11 +2,12 @@ package user
 
 import (
 	"base/internal/handler/filter"
-	"base/internal/model"
+	"base/internal/models"
 	"context"
 )
 
-func (s userService) List(ctx context.Context, f *filter.UserListParams) ([]model.User, error) {
-	var res = []model.User{}
-	return res, s.userRepo.Search(ctx, f, &res)
+func (s userService) List(ctx context.Context, input *filter.UserListParams) ([]models.User, int64, error) {
+	var res = []models.User{}
+	var total, err = s.userRepo.R_SearchAndCount(ctx, input, &res)
+	return res, total, err
 }

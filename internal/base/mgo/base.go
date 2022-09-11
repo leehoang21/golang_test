@@ -12,29 +12,30 @@ import (
 )
 
 type BaseTable interface {
-	Search(ctx context.Context, f filter.Filter, val interface{}) error
-	CreateIndexOne(ctx context.Context, mode mongo.IndexModel, opts ...*options.CreateIndexesOptions) error
-	CreateIndexMany(ctx context.Context, mods []mongo.IndexModel, opts ...*options.CreateIndexesOptions) error
-	Create(ctx context.Context, model model.IModel) error
-	CreateForce(ctx context.Context, model model.IModel) error
-	Update(ctx context.Context, model model.IModel) error
-	Delete(ctx context.Context, id string, model model.IModel) error
-	DeleteByID(ctx context.Context, id string) error
-	SelectAndDelete(ctx context.Context, id string) error
-	UnsafeUpdate(ctx context.Context, filter bson.M, v interface{}) error
-	UpdateForce(ctx context.Context, filter bson.M, v interface{}) error
-	UnsafeUpdateByID(ctx context.Context, id string, v interface{}) error
-	CreateMany(ctx context.Context, v []interface{}) ([]interface{}, error)
-	SelectOne(ctx context.Context, filter bson.M, v interface{}) error
-	SelectOneWithFields(ctx context.Context, filter bson.M, v interface{}, fields bson.M) error
-	SelectManyWithFields(ctx context.Context, filter bson.M, v interface{}, fields bson.M) error
-	SelectByID(ctx context.Context, id string, v interface{}) error
-	SelectMany(ctx context.Context, filter bson.M, v interface{}) error
-	SelectDistinct(ctx context.Context, field string, filter bson.M) ([]interface{}, error)
-	UpdateAll(ctx context.Context, filter bson.M, update interface{}) error
-	SelectAndSort(ctx context.Context, filter bson.M, sortFields bson.M, skip, limit int64, res interface{}) error
-	Pipe(ctx context.Context, pipeline []bson.M, res interface{}) error
-	Count(ctx context.Context, filter bson.M) (int64, error)
+	R_Search(ctx context.Context, f filter.Filter, val interface{}) error
+	R_SearchAndCount(ctx context.Context, f filter.Filter, val interface{}) (int64, error)
+	R_CreateIndexOne(ctx context.Context, mode mongo.IndexModel, opts ...*options.CreateIndexesOptions) error
+	R_CreateIndexMany(ctx context.Context, mods []mongo.IndexModel, opts ...*options.CreateIndexesOptions) error
+	R_Create(ctx context.Context, model model.IModel) error
+	R_CreateForce(ctx context.Context, model model.IModel) error
+	R_Update(ctx context.Context, model model.IModel) error
+	R_Delete(ctx context.Context, id string, model model.IModel) error
+	R_DeleteByID(ctx context.Context, id string) error
+	R_SelectAndDelete(ctx context.Context, id string) error
+	R_UnsafeUpdate(ctx context.Context, filter bson.M, v interface{}) error
+	R_UpdateForce(ctx context.Context, filter bson.M, v interface{}) error
+	R_UnsafeUpdateByID(ctx context.Context, id string, v interface{}) error
+	R_CreateMany(ctx context.Context, v []interface{}) ([]interface{}, error)
+	R_SelectOne(ctx context.Context, filter bson.M, v interface{}) error
+	R_SelectOneWithFields(ctx context.Context, filter bson.M, v interface{}, fields bson.M) error
+	R_SelectManyWithFields(ctx context.Context, filter bson.M, v interface{}, fields bson.M) error
+	R_SelectByID(ctx context.Context, id string, v interface{}) error
+	R_SelectMany(ctx context.Context, filter bson.M, v interface{}) error
+	R_SelectDistinct(ctx context.Context, field string, filter bson.M) ([]interface{}, error)
+	R_UpdateAll(ctx context.Context, filter bson.M, update interface{}) error
+	R_SelectAndSort(ctx context.Context, filter bson.M, sortFields bson.M, skip, limit int64, res interface{}) error
+	R_Pipe(ctx context.Context, pipeline []bson.M, res interface{}) error
+	R_Count(ctx context.Context, filter bson.M) (int64, error)
 }
 
 func NewBaseTable(name, prefix string, dbc *mongo.Database) BaseTable {

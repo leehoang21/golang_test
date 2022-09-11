@@ -8,9 +8,9 @@ import (
 
 type UserListParams struct {
 	filter.PaginationFilter
-	Name  string `json:"name"`
-	Email string `json:"email"`
-	Phone string `json:"phone"`
+	Name  string `json:"name" form:"name"`
+	Email string `json:"email" form:"email"`
+	Phone string `json:"phone" form:"phone"`
 }
 
 func NewUserListPrams() *UserListParams {

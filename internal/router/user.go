@@ -8,8 +8,11 @@ import (
 
 func (handlerFuncs HandlerFuncs) createUserGroup(g *gin.RouterGroup,
 	mid middleware.Middleware, groupName string) {
-	authGroup := g.Group(groupName).Use(mid.MidBasicType(""))
-	authGroup.POST("/create", handlerFuncs.LoginHandler)
-	authGroup.POST("/reset-pass", handlerFuncs.LoginHandler)
-	authGroup.GET("/profile", handlerFuncs.LoginHandler)
+	userGroup := g.Group(groupName) //.Use(mid.MidBasicType(""))
+	userGroup.POST("", handlerFuncs.UserCreateHandler)
+	userGroup.PUT("/:id", handlerFuncs.UserUpdateHandler)
+	userGroup.PUT("/:id/reset-pass", handlerFuncs.UserResetPassHandler)
+	userGroup.GET("", handlerFuncs.UserListHandler)
+	userGroup.GET("/:id", handlerFuncs.UserGetHandler)
+	userGroup.DELETE("/:id", handlerFuncs.UserDeleteHandler)
 }

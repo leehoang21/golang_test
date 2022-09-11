@@ -20,19 +20,19 @@ func NewUserRepo(dbc *mongo.Database, name, prefix string) repository.User {
 
 func (u userRepository) GetByEmail(ctx context.Context, email string) (*models.User, error) {
 	var usr *models.User
-	return usr, u.SelectOne(ctx, bson.M{
+	return usr, u.R_SelectOne(ctx, bson.M{
 		"email": email,
 	}, &usr)
 }
 
 func (u userRepository) GetByPhone(ctx context.Context, phone string) (*models.User, error) {
 	var usr *models.User
-	return usr, u.SelectOne(ctx, bson.M{
+	return usr, u.R_SelectOne(ctx, bson.M{
 		"phone": phone,
 	}, &usr)
 }
 
 func (u userRepository) GetByID(ctx context.Context, id string) (*models.User, error) {
 	var usr *models.User
-	return usr, u.SelectByID(ctx, id, &usr)
+	return usr, u.R_SelectByID(ctx, id, &usr)
 }

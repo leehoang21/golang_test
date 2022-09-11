@@ -29,14 +29,14 @@ func NewTable(name, prefix string, db *mongo.Database) *Table {
 	}
 }
 
-func (t *Table) Search(ctx context.Context, f filter.Filter, val interface{}) error {
+func (t *Table) R_Search(ctx context.Context, f filter.Filter, val interface{}) error {
 	var q = []bson.M{}
 	//var opts = options.Find()
 	if f.GetWhere() != nil {
 		q = append(q, bson.M{"$match": f.GetWhere()})
 	}
 
-	if f.GetOrderBy() != nil {
+	if len(f.GetOrderBy()) > 0 {
 		q = append(q, bson.M{"$sort": f.GetOrderBy()})
 	}
 
@@ -49,27 +49,80 @@ func (t *Table) Search(ctx context.Context, f filter.Filter, val interface{}) er
 		q = append(q, bson.M{"$limit": f.GetLimit()})
 	}
 
-	if f.GetJoins() != nil {
+	if len(f.GetJoins()) > 0 {
 		q = append(q, bson.M{"$lookup": f.GetJoins()})
 	}
 
-	return t.Pipe(ctx, q, val)
+	return t.R_Pipe(ctx, q, val)
 }
 
-func (t *Table) CreateIndexOne(ctx context.Context, mode mongo.IndexModel, opts ...*options.CreateIndexesOptions) error {
+func (t *Table) R_SearchAndCount(ctx context.Context, f filter.Filter, val interface{}) (int64, error) {
+	var q = []bson.M{}
+	var qCount = []bson.M{}
+	//var opts = options.Find()
+	if f.GetWhere() != nil {
+		q = append(q, bson.M{"$match": f.GetWhere()})
+		qCount = append(q, bson.M{"$match": f.GetWhere()})
+	}
+
+	if len(f.GetOrderBy()) > 0 {
+		q = append(q, bson.M{"$sort": f.GetOrderBy()})
+	}
+
+	if f.GetOffset() > 0 {
+		//opts.SetSkip(f.GetOffset())
+		q = append(q, bson.M{"$skip": f.GetOffset()})
+	}
+	if f.GetLimit() > 0 {
+		//opts.SetLimit(f.GetLimit())
+		q = append(q, bson.M{"$limit": f.GetLimit()})
+	}
+
+	if len(f.GetJoins()) > 0 {
+		q = append(q, bson.M{"$lookup": f.GetJoins()})
+		qCount = append(q, bson.M{"$lookup": f.GetJoins()})
+	}
+	qCount = append(qCount, bson.M{"$count": "count_data"})
+
+	err := t.R_Pipe(ctx, q, val)
+	if err != nil {
+		return 0, err
+	}
+	d := []struct {
+		Count int64 `bson:"count_data"`
+	}{}
+	err = t.R_Pipe(ctx, qCount, &d)
+	if len(d) > 0 {
+		return d[0].Count, err
+	}
+	return 0, err
+}
+
+func (t *Table) R_CreateIndexOne(ctx context.Context, mode mongo.IndexModel, opts ...*options.CreateIndexesOptions) error {
 	var _, err = t.Indexes().CreateOne(ctx, mode, opts...)
 	return err
 }
 
-func (t *Table) CreateIndexMany(ctx context.Context, mods []mongo.IndexModel, opts ...*options.CreateIndexesOptions) error {
+func (t *Table) R_CreateIndexMany(ctx context.Context, mods []mongo.IndexModel, opts ...*options.CreateIndexesOptions) error {
 
 	var _, err = t.Indexes().CreateMany(ctx, mods, opts...)
 	return err
 }
 
-func (t *Table) Create(ctx context.Context, model model.IModel) error {
+func (t *Table) R_Create(ctx context.Context, model model.IModel) error {
 
 	model.BeforeCreate(t.Prefix)
+	fmt.Println(model)
+	var _, err = t.InsertOne(ctx, model)
+
+	if err != nil {
+		logDB.Errorf("Create table "+t.Name()+": "+err.Error(), model)
+	}
+	return err
+}
+
+func (t *Table) R_CreateForce(ctx context.Context, model model.IModel) error {
+
 	var _, err = t.InsertOne(ctx, model)
 	if err != nil {
 		logDB.Errorf("Create table "+t.Name()+": "+err.Error(), model)
@@ -77,16 +130,7 @@ func (t *Table) Create(ctx context.Context, model model.IModel) error {
 	return err
 }
 
-func (t *Table) CreateForce(ctx context.Context, model model.IModel) error {
-
-	var _, err = t.InsertOne(ctx, model)
-	if err != nil {
-		logDB.Errorf("Create table "+t.Name()+": "+err.Error(), model)
-	}
-	return err
-}
-
-func (t *Table) Update(ctx context.Context, model model.IModel) error {
+func (t *Table) R_Update(ctx context.Context, model model.IModel) error {
 	model.BeforeUpdate()
 	var _, err = t.UpdateOne(ctx, bson.M{"_id": model.GetID(), "dtime": 0}, bson.M{"$set": model})
 	if err != nil {
@@ -95,7 +139,7 @@ func (t *Table) Update(ctx context.Context, model model.IModel) error {
 	return err
 }
 
-func (t *Table) Delete(ctx context.Context, id string, model model.IModel) error {
+func (t *Table) R_Delete(ctx context.Context, id string, model model.IModel) error {
 	model.BeforeDelete()
 	var _, err = t.UpdateOne(ctx, bson.M{"_id": id, "dtime": 0}, bson.M{"$set": bson.M{"dtime": time.Now().Unix()}})
 	if err != nil {
@@ -104,14 +148,14 @@ func (t *Table) Delete(ctx context.Context, id string, model model.IModel) error
 	return err
 }
 
-func (t *Table) DeleteByID(ctx context.Context, id string) error {
+func (t *Table) R_DeleteByID(ctx context.Context, id string) error {
 	var _, err = t.UpdateByID(ctx, id, bson.M{"$set": bson.M{"dtime": time.Now().Unix()}})
 	if err != nil {
 		logDB.Errorf("DeleteByID "+err.Error(), id)
 	}
 	return err
 }
-func (t *Table) SelectAndDelete(ctx context.Context, id string) error {
+func (t *Table) R_SelectAndDelete(ctx context.Context, id string) error {
 	var timeNow = time.Now().Unix()
 	after := options.After
 	opts := &options.FindOneAndUpdateOptions{
@@ -125,7 +169,7 @@ func (t *Table) SelectAndDelete(ctx context.Context, id string) error {
 	return res.Err()
 }
 
-func (t *Table) UnsafeUpdate(ctx context.Context, filter bson.M, v interface{}) error {
+func (t *Table) R_UnsafeUpdate(ctx context.Context, filter bson.M, v interface{}) error {
 	filter["dtime"] = 0
 	var _, err = t.UpdateOne(ctx, filter,
 		bson.M{"$set": v})
@@ -135,7 +179,7 @@ func (t *Table) UnsafeUpdate(ctx context.Context, filter bson.M, v interface{}) 
 	return err
 }
 
-func (t *Table) UpdateForce(ctx context.Context, filter bson.M, v interface{}) error {
+func (t *Table) R_UpdateForce(ctx context.Context, filter bson.M, v interface{}) error {
 	filter["dtime"] = 0
 	var _, err = t.UpdateOne(ctx, filter, v)
 	if err != nil {
@@ -144,7 +188,7 @@ func (t *Table) UpdateForce(ctx context.Context, filter bson.M, v interface{}) e
 	return err
 }
 
-func (t *Table) UnsafeUpdateByID(ctx context.Context, id string, v interface{}) error {
+func (t *Table) R_UnsafeUpdateByID(ctx context.Context, id string, v interface{}) error {
 	var _, err = t.UpdateOne(ctx,
 		bson.M{"dtime": 0,
 			"_id": id},
@@ -155,7 +199,7 @@ func (t *Table) UnsafeUpdateByID(ctx context.Context, id string, v interface{}) 
 	return err
 }
 
-func (t *Table) CreateMany(ctx context.Context, v []interface{}) ([]interface{}, error) {
+func (t *Table) R_CreateMany(ctx context.Context, v []interface{}) ([]interface{}, error) {
 	var res, err = t.InsertMany(ctx, v)
 	var ids []interface{}
 	if err != nil {
@@ -167,20 +211,20 @@ func (t *Table) CreateMany(ctx context.Context, v []interface{}) ([]interface{},
 	return ids, err
 }
 
-func (t *Table) SelectOne(ctx context.Context, filter bson.M, v interface{}) error {
+func (t *Table) R_SelectOne(ctx context.Context, filter bson.M, v interface{}) error {
 	filter["dtime"] = 0
 	var err = t.FindOne(ctx, filter).Decode(v)
 	return err
 }
 
-func (t *Table) SelectOneWithFields(ctx context.Context, filter bson.M, v interface{}, fields bson.M) error {
+func (t *Table) R_SelectOneWithFields(ctx context.Context, filter bson.M, v interface{}, fields bson.M) error {
 	filter["dtime"] = 0
 	var opts = options.FindOne().SetProjection(fields)
 	var err = t.FindOne(ctx, filter, opts).Decode(v)
 	return err
 }
 
-func (t *Table) SelectManyWithFields(ctx context.Context, filter bson.M, v interface{}, fields bson.M) error {
+func (t *Table) R_SelectManyWithFields(ctx context.Context, filter bson.M, v interface{}, fields bson.M) error {
 	filter["dtime"] = 0
 	var opts = options.Find().SetProjection(fields)
 	var cur, err = t.Find(ctx, filter, opts)
@@ -192,7 +236,7 @@ func (t *Table) SelectManyWithFields(ctx context.Context, filter bson.M, v inter
 	return err
 }
 
-func (t *Table) SelectByID(ctx context.Context, id string, v interface{}) error {
+func (t *Table) R_SelectByID(ctx context.Context, id string, v interface{}) error {
 	var filter = bson.M{
 		"dtime": 0,
 		"_id":   id,
@@ -202,7 +246,7 @@ func (t *Table) SelectByID(ctx context.Context, id string, v interface{}) error 
 	return err
 }
 
-func (t *Table) SelectMany(ctx context.Context, filter bson.M, v interface{}) error {
+func (t *Table) R_SelectMany(ctx context.Context, filter bson.M, v interface{}) error {
 
 	filter["dtime"] = 0
 	var cur, err = t.Find(ctx, filter)
@@ -214,13 +258,13 @@ func (t *Table) SelectMany(ctx context.Context, filter bson.M, v interface{}) er
 	return err
 }
 
-func (t *Table) SelectDistinct(ctx context.Context, field string, filter bson.M) ([]interface{}, error) {
+func (t *Table) R_SelectDistinct(ctx context.Context, field string, filter bson.M) ([]interface{}, error) {
 
 	filter["dtime"] = 0
 	return t.Distinct(ctx, field, filter)
 }
 
-func (t *Table) UpdateAll(ctx context.Context, filter bson.M, update interface{}) error {
+func (t *Table) R_UpdateAll(ctx context.Context, filter bson.M, update interface{}) error {
 
 	filter["dtime"] = 0
 	var _, err = t.UpdateMany(ctx, filter, bson.M{"$set": update})
@@ -230,7 +274,7 @@ func (t *Table) UpdateAll(ctx context.Context, filter bson.M, update interface{}
 	return err
 }
 
-func (t *Table) SelectAndSort(ctx context.Context, filter bson.M, sortFields bson.M, skip, limit int64, res interface{}) error {
+func (t *Table) R_SelectAndSort(ctx context.Context, filter bson.M, sortFields bson.M, skip, limit int64, res interface{}) error {
 
 	filter["dtime"] = 0
 	var opts = options.Find()
@@ -255,7 +299,7 @@ func (t *Table) SelectAndSort(ctx context.Context, filter bson.M, sortFields bso
 	return err
 }
 
-func (t *Table) Pipe(ctx context.Context, pipeline []bson.M, res interface{}) error {
+func (t *Table) R_Pipe(ctx context.Context, pipeline []bson.M, res interface{}) error {
 
 	var cur, err = t.Aggregate(ctx, pipeline)
 	if err != nil {
@@ -265,7 +309,7 @@ func (t *Table) Pipe(ctx context.Context, pipeline []bson.M, res interface{}) er
 	return err
 }
 
-func (t *Table) Count(ctx context.Context, filter bson.M) (int64, error) {
+func (t *Table) R_Count(ctx context.Context, filter bson.M) (int64, error) {
 	filter["dtime"] = 0
 
 	return t.CountDocuments(ctx, filter)

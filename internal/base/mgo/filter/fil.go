@@ -38,13 +38,13 @@ func (f *BasicFilter) GetJoins() Joins {
 	return f.joins
 }
 
-func (f *BasicFilter) AddWhere(key string, query string, values ...interface{}) *BasicFilter {
+func (f *BasicFilter) AddWhere(key string, query string, values interface{}) *BasicFilter { //values ...interface{}) *BasicFilter {
 	f.where[query] = values
 	f.keys[key] = true
 	return f
 }
 
-func (f *BasicFilter) AddJoin(join string, values ...interface{}) *BasicFilter {
+func (f *BasicFilter) AddJoin(join string, values interface{}) *BasicFilter { // ...interface{}) *BasicFilter {
 	f.joins[join] = values
 	return f
 }

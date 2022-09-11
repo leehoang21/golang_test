@@ -7,6 +7,7 @@ import (
 	"base/internal/repository/querymgo"
 	"base/internal/router"
 	"base/internal/router/middleware"
+	"base/internal/service/token"
 	"base/internal/service/user"
 	"base/internal/utils/validator"
 	"base/internal/utils/web"
@@ -42,18 +43,24 @@ func main() {
 
 	var validatorService = validator.NewValidator()
 	var userService = user.NewUserService(userRepo, validatorService)
-	//var tokenService = token.NewTokenService(tokenRepo, validatorService)
+	var tokenService = token.NewTokenService(tokenRepo, validatorService)
 	contextWith := web.NewContextWith()
 	mid := middleware.NewMiddleware(tokenRepo, userRepo, contextWith)
 
-	handlerUser := handler.NewUserHandler(userService, contextWith)
+	handlerUser := handler.NewUserHandler(userService, tokenService, contextWith)
 	var rounterFuncs = router.HandlerFuncs{
-		UserCreateHandler: handlerUser.CreateHandler,
-		LogoutHandler:     handlerUser.LogoutHandler,
-		LoginHandler:      handlerUser.LoginHandler,
-		UserUpdateHandler: handlerUser.UpdateHandler,
+		UserCreateHandler:    handlerUser.CreateHandler,
+		UserUpdateHandler:    handlerUser.UpdateHandler,
+		UserResetPassHandler: handlerUser.ResetPassHandler,
+		UserListHandler:      handlerUser.GetListHandler,
+		UserDeleteHandler:    handlerUser.DeleteHandler,
+		UserGetHandler:       handlerUser.GetHandler,
+
+		LogoutHandler: handlerUser.LogoutHandler,
+		LoginHandler:  handlerUser.LoginHandler,
 	}
 
 	routerApi := rounterFuncs.Create(mid)
+
 	routerApi.Run(":8080")
 }

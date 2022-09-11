@@ -10,6 +10,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson/bsontype"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readconcern"
+	"go.mongodb.org/mongo-driver/mongo/writeconcern"
 )
 
 type Infrastructure struct {
@@ -57,4 +59,41 @@ func (inf *Infrastructure) ConnectMongo(ctx context.Context, uri, user, pass str
 
 func (inf *Infrastructure) GetDatabase(client *mongo.Client, dbName string) *mongo.Database {
 	return client.Database(dbName)
+}
+
+func R_Transaction(ctx context.Context, client *mongo.Client, mFuncs []func() error) error {
+	wc := writeconcern.New(writeconcern.WMajority())
+	rc := readconcern.Snapshot()
+	txnOpts := options.Transaction().SetWriteConcern(wc).SetReadConcern(rc)
+
+	session, err := client.StartSession()
+	if err != nil {
+		return err
+	}
+	defer session.EndSession(ctx)
+
+	err = mongo.WithSession(ctx, session, func(sessionContext mongo.SessionContext) error {
+		if err = session.StartTransaction(txnOpts); err != nil {
+			return err
+		}
+		//start function create/insert/update
+		for _, itemFunc := range mFuncs {
+			err = itemFunc()
+			if err != nil {
+				return err
+			}
+		}
+		//end funcions
+		if err = session.CommitTransaction(sessionContext); err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		if abortErr := session.AbortTransaction(ctx); abortErr != nil {
+			return abortErr
+		}
+		return err
+	}
+	return nil
 }

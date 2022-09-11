@@ -2,9 +2,10 @@ package handler
 
 import (
 	"base/internal/models"
+	"base/internal/service/auth"
+	"base/internal/service/token"
 	"base/internal/service/user"
 	"base/internal/utils/web"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,12 +22,21 @@ import (
 // @Success      200        {object}  models.User
 // @Router       /api/v1/auth/login [post]
 func (u UserHandler) LoginHandler(ctx *gin.Context) {
-	fmt.Println("vao day  login")
 	var f = user.LoginInput{}
 	web.AssertNil(ctx.BindJSON(&f))
-	var us, err = u.UserService.Login(ctx.Request.Context(), f)
+	var us, err = u.userService.Login(ctx.Request.Context(), f)
 	web.AssertNil(err)
-	u.SendData(ctx, us)
+	var tkInput = token.TokenCreateInput{
+		UserID:   us.ID,
+		Platform: f.Platform,
+		OrgID:    us.OrgID,
+	}
+	token, err := u.tokenService.Create(ctx, tkInput)
+	web.AssertNil(err)
+	u.SendData(ctx, auth.ResponseLogin{
+		AccessToken: token.ID,
+		User:        us,
+	})
 }
 
 // LogoutHandler
@@ -45,7 +55,7 @@ func (u UserHandler) LogoutHandler(ctx *gin.Context) {
 	web.AssertNil(ctx.BindJSON(&f))
 	userID, err := u.contextWith.GetUserID(ctx)
 	web.AssertNil(err)
-	err = u.TokenService.RevokeAllByUserID(ctx, userID)
+	err = u.tokenService.RevokeAllByUserID(ctx, userID)
 	web.AssertNil(err)
 	u.SendData(ctx, nil)
 }
