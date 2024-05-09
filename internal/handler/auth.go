@@ -29,7 +29,6 @@ func (u UserHandler) LoginHandler(ctx *gin.Context) {
 	var tkInput = token.TokenCreateInput{
 		UserID:   us.ID,
 		Platform: f.Platform,
-		OrgID:    us.OrgID,
 	}
 	token, err := u.tokenService.Create(ctx, tkInput)
 	web.AssertNil(err)

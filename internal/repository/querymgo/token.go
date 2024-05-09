@@ -19,19 +19,14 @@ func NewTokenRepo(dbc *mongo.Database, name, prefix string) repository.Token {
 }
 
 func (u tokenRepository) RevokeAllByUserID(ctx context.Context, userID string) error {
-	return u.R_UpdateAll(ctx, bson.M{
+	_, err := u.DeleteMany(ctx, bson.M{
 		"user_id": userID,
-	}, bson.M{
-		"revoke": true,
 	})
+	return err
 }
 
 func (u tokenRepository) RevokeID(ctx context.Context, id string) error {
-	return u.R_UpdateAll(ctx, bson.M{
-		"_id": id,
-	}, bson.M{
-		"revoke": true,
-	})
+	return u.R_DeleteByID(ctx, id)
 }
 
 func (u tokenRepository) GetByID(ctx context.Context, id string) (*models.Token, error) {

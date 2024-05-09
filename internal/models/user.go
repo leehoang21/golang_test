@@ -12,6 +12,4 @@ type User struct {
 	Password        hashpassword.Password `json:"password,omitempty" bson:"password"`
 	FullName        string                `json:"fullname" bson:"fullname"`
 	Birthday        string                `json:"birthday" bson:"birthday"`
-	OrgID           string                `json:"org_id" bson:"org_id"`
-	ZaloID          string                `json:"zalo_id" bson:"zalo_id"`
 }

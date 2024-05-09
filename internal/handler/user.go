@@ -41,7 +41,7 @@ func NewUserHandler(
 // @Success      200        {object}  models.User
 // @Router       /api/v1/users [post]
 func (u UserHandler) CreateHandler(ctx *gin.Context) {
-	var f user.UserCreateInput
+	var f models.User
 	web.AssertNil(ctx.BindJSON(&f))
 	var us, err = u.userService.Create(ctx.Request.Context(), f)
 	web.AssertNil(err)
