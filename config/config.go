@@ -1,6 +1,9 @@
 package config
 
-import "github.com/caarlos0/env/v6"
+import (
+	"github.com/caarlos0/env/v6"
+	"github.com/joho/godotenv"
+)
 
 type Config struct {
 	Port string `ENV:"EV_SV_PORT"`
@@ -17,6 +20,7 @@ type DB struct {
 var config Config
 
 func LoadEnv() Config {
+	_ = godotenv.Load()
 	_ = env.Parse(&config)
 	return config
 }
