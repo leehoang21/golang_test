@@ -8,10 +8,10 @@ type Config struct {
 }
 
 type DB struct {
-	DBName string `env:"DB_NAME" envDefault:"electric_new"`
-	DBUser string `env:"DB_USER" envDefault:""`
-	DBPass string `env:"DB_PASS" envDefault:""`
-	Path   string `env:"PATH" envDefault:"mongodb://localhost:27017"`
+	DBName string `env:"EV_DB_NAME" envDefault:"electric_new"`
+	DBUser string `env:"EV_DB_USER" envDefault:""`
+	DBPass string `env:"EV_DB_PASS" envDefault:""`
+	Path   string `env:"EV_DB_PATH" envDefault:"mongodb://localhost:27017"`
 }
 
 var config Config
