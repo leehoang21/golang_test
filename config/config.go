@@ -3,7 +3,7 @@ package config
 import "github.com/caarlos0/env/v6"
 
 type Config struct {
-	Port string `ENV:"PORT"`
+	Port string `ENV:"EV_SV_PORT"`
 	DB
 }
 
