@@ -56,7 +56,7 @@ func main() {
 	mid := middleware.NewMiddleware(tokenRepo, userRepo, groupRoleRepo, featureRepo, contextWith)
 
 	handlerUser := handler.NewUserHandler(userService, tokenService, contextWith)
-	handlerGroupRole := handler.NewGroupRoleHandler(gRoleService, tokenService, contextWith)
+	handlerGroupRole := handler.NewGroupRoleHandler(gRoleService, contextWith)
 	handlerFeature := handler.NewFeatureHandler(featureService, contextWith)
 	var rounterFuncs = router.HandlerFuncs{
 		UserCreateHandler:    handlerUser.CreateHandler,
