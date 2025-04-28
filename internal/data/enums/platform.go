@@ -18,10 +18,10 @@ func (p PlatformType) String() string {
 	return []string{"platform_type_undefined", "platform_type_google", "platform_type_facebook"}[p]
 }
 
-func StringToPlatformType(s string) PlatformType {
-	r, ok := platformType[s]
-	if ok {
-		return r
-	}
-	return PlatformType_Undefined
-}
+//func StringToPlatformType(s string) PlatformType {
+//	r, ok := platformType[s]
+//	if ok {
+//		return r
+//	}
+//	return PlatformType_Undefined
+//}

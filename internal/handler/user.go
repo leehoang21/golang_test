@@ -40,7 +40,7 @@ func NewUserHandler(
 // @Success      200        {object}  models.User
 // @Router       /api/v1/users [post]
 func (u UserHandler) CreateHandler(ctx *gin.Context) {
-	var input user.UserInput
+	var input user.Input
 	web.AssertNil(ctx.BindJSON(&input))
 	var us, err = u.userService.Create(ctx.Request.Context(), input)
 	web.AssertNil(err)
@@ -59,7 +59,7 @@ func (u UserHandler) CreateHandler(ctx *gin.Context) {
 // @Success      200        {object}  models.User
 // @Router       /api/v1/users [put]
 func (u UserHandler) UpdateHandler(ctx *gin.Context) {
-	var input user.UserInput
+	var input user.Input
 	web.AssertNil(ctx.BindJSON(&input))
 	userID, e := u.contextWith.GetUserID(ctx)
 	web.AssertNil(e)
@@ -142,7 +142,7 @@ func (u UserHandler) GetHandler(ctx *gin.Context) {
 // @Success      200        {object}  models.User
 // @Router       /api/v1/users/reset-pass [put]
 func (u UserHandler) ResetPassHandler(ctx *gin.Context) {
-	var f user.UserResetPassInput
+	var f user.ResetPassInput
 	web.AssertNil(ctx.BindJSON(&f))
 	userID, e := u.contextWith.GetUserID(ctx)
 	web.AssertNil(e)

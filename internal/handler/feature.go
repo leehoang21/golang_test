@@ -35,7 +35,7 @@ func NewFeatureHandler(
 // @Success      200        {object}  models.Feature
 // @Router       /api/v1/features [post]
 func (gr FeatureHandler) CreateHandler(ctx *gin.Context) {
-	var input feature.FeatureInput
+	var input feature.Input
 	web.AssertNil(ctx.BindJSON(&input))
 	f, err := gr.service.Create(ctx.Request.Context(), input)
 	web.AssertNil(err)
@@ -54,7 +54,7 @@ func (gr FeatureHandler) CreateHandler(ctx *gin.Context) {
 // @Success      200        {object}  models.Feature
 // @Router       /api/v1/features [put]
 func (gr FeatureHandler) UpdateHandler(ctx *gin.Context) {
-	var input feature.FeatureInput
+	var input feature.Input
 	web.AssertNil(ctx.BindJSON(&input))
 	id := ctx.Param("id")
 	var f, err = gr.service.Update(ctx.Request.Context(), id, input)

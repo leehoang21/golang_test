@@ -12,8 +12,8 @@ import (
 type Service interface {
 	List(ctx context.Context, input *filter.FeatureListParams) ([]models.Feature, int64, error)
 	GetByID(ctx context.Context, id string) (*models.Feature, error)
-	Create(ctx context.Context, roleInput FeatureInput) (*models.Feature, error)
-	Update(ctx context.Context, id string, roleInput FeatureInput) (*models.Feature, error)
+	Create(ctx context.Context, roleInput Input) (*models.Feature, error)
+	Update(ctx context.Context, id string, roleInput Input) (*models.Feature, error)
 	Delete(ctx context.Context, id string) error
 }
 

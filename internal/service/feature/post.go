@@ -6,7 +6,7 @@ import (
 	"context"
 )
 
-func (s *featureService) Create(ctx context.Context, input FeatureInput) (*models.Feature, error) {
+func (s *featureService) Create(ctx context.Context, input Input) (*models.Feature, error) {
 	if err := s.validator.ValidateStruct(input); err != nil {
 		return nil, err
 	}

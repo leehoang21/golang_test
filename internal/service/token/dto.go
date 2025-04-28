@@ -4,13 +4,13 @@ import (
 	"base/internal/models"
 )
 
-type TokenCreateInput struct {
+type CreateInput struct {
 	UserID   string
 	Platform string
 	OrgID    string
 }
 
-func (t TokenCreateInput) ToModel() *models.Token {
+func (t CreateInput) ToModel() *models.Token {
 	return &models.Token{
 		UserID:   t.UserID,
 		Platform: t.Platform,

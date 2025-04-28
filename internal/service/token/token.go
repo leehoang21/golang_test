@@ -9,7 +9,7 @@ import (
 )
 
 type Service interface {
-	Create(ctx context.Context, token TokenCreateInput) (*models.Token, error)
+	Create(ctx context.Context, token CreateInput) (*models.Token, error)
 	RevokeAllByUserID(ctx context.Context, userID string) error
 	RevokeByID(ctx context.Context, id string) error
 }

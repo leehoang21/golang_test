@@ -5,7 +5,7 @@ import (
 	hashpassword "base/internal/utils/hash_password"
 )
 
-type UserInput struct {
+type Input struct {
 	Email    string `json:"email" validate:"required,email"`
 	Phone    string `json:"phone" `
 	Password string `json:"password" `
@@ -14,7 +14,7 @@ type UserInput struct {
 	Birthday string `json:"birthday"`
 }
 
-func (u UserInput) ToModel() *models.User {
+func (u Input) ToModel() *models.User {
 	return &models.User{
 		Email:    u.Email,
 		Phone:    u.Phone,
@@ -24,7 +24,7 @@ func (u UserInput) ToModel() *models.User {
 	}
 }
 
-type UserResetPassInput struct {
+type ResetPassInput struct {
 	PasswordOld string `json:"password_old" validate:"required"`
 	PasswordNew string `json:"password_new" validate:"required"`
 }

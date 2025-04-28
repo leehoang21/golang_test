@@ -25,7 +25,7 @@ func (u UserHandler) LoginHandler(ctx *gin.Context) {
 	web.AssertNil(ctx.BindJSON(&f))
 	var us, err = u.userService.Login(ctx.Request.Context(), f)
 	web.AssertNil(err)
-	var tkInput = token.TokenCreateInput{
+	var tkInput = token.CreateInput{
 		UserID:   us.ID,
 		Platform: f.Platform,
 	}

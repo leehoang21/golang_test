@@ -5,7 +5,7 @@ import (
 	"base/internal/models"
 )
 
-type FeatureInput struct {
+type Input struct {
 	Name      string   `json:"name" validate:"required"`
 	KeyMenu   string   `json:"key_menu"`
 	URLView   string   `json:"url_view" `
@@ -15,7 +15,7 @@ type FeatureInput struct {
 	RoleNames []string `json:"role_names" bson:"role_names" validate:"required"`
 }
 
-func (f FeatureInput) ToModel() *models.Feature {
+func (f Input) ToModel() *models.Feature {
 	return &models.Feature{
 		Name:      f.Name,
 		KeyMenu:   f.KeyMenu,

@@ -7,7 +7,7 @@ import (
 	"context"
 )
 
-func (s *userService) Create(ctx context.Context, userInput UserInput) (*models.User, error) {
+func (s *userService) Create(ctx context.Context, userInput Input) (*models.User, error) {
 	if usr, _ := s.userRepo.GetByEmail(ctx, userInput.Email); usr != nil {
 		return nil, web.BadRequest("Tài khoản đã tồn tại")
 	}
@@ -20,7 +20,7 @@ func (s *userService) Create(ctx context.Context, userInput UserInput) (*models.
 	}
 
 	usr := userInput.ToModel()
-	pass, err := usr.Password.GererateHashedPassword()
+	pass, err := usr.Password.GenerateHashedPassword()
 	if err != nil {
 		return nil, err
 	}

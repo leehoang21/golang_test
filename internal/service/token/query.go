@@ -5,7 +5,7 @@ import (
 	"context"
 )
 
-func (s *tokenService) Create(ctx context.Context, tkInput TokenCreateInput) (*models.Token, error) {
+func (s *tokenService) Create(ctx context.Context, tkInput CreateInput) (*models.Token, error) {
 	tk := tkInput.ToModel()
 	err := s.tokenRepo.R_Create(ctx, tk)
 	if err != nil {

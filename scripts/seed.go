@@ -13,8 +13,8 @@ import (
 	"log"
 )
 
-func permissionUser(role string) feature.FeatureInput {
-	return feature.FeatureInput{
+func permissionUser(role string) feature.Input {
+	return feature.Input{
 		RoleNames: []string{role},
 		Name:      "User",
 		KeyMenu:   "/users",
@@ -25,8 +25,8 @@ func permissionUser(role string) feature.FeatureInput {
 	}
 }
 
-func permissionGroupRole(role string) feature.FeatureInput {
-	return feature.FeatureInput{
+func permissionGroupRole(role string) feature.Input {
+	return feature.Input{
 		RoleNames: []string{role},
 		Name:      "GroupRole",
 		KeyMenu:   "/group-roles",
@@ -37,8 +37,8 @@ func permissionGroupRole(role string) feature.FeatureInput {
 	}
 }
 
-func permissionFeature(role string) feature.FeatureInput {
-	return feature.FeatureInput{
+func permissionFeature(role string) feature.Input {
+	return feature.Input{
 		RoleNames: []string{role},
 		Name:      "Feature",
 		KeyMenu:   "/features",
@@ -49,8 +49,8 @@ func permissionFeature(role string) feature.FeatureInput {
 	}
 }
 
-func superAdmin() user.UserInput {
-	return user.UserInput{
+func superAdmin() user.Input {
+	return user.Input{
 		Email:    "admin@admin.com",
 		Phone:    "",
 		Password: "Admin123@",
