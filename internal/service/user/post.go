@@ -7,20 +7,28 @@ import (
 	"context"
 )
 
-func (s *userService) Create(ctx context.Context, userInput models.User) (*models.User, error) {
+func (s *userService) Create(ctx context.Context, userInput UserInput) (*models.User, error) {
 	if usr, _ := s.userRepo.GetByEmail(ctx, userInput.Email); usr != nil {
 		return nil, web.BadRequest("Tài khoản đã tồn tại")
 	}
 
-	pass, err := userInput.Password.GererateHashedPassword()
+	if err := s.validator.ValidateStruct(userInput); err != nil {
+		return nil, err
+	}
+	if userInput.Password == "" {
+		return nil, web.BadRequest("Mật khẩu không được để trống")
+	}
+
+	usr := userInput.ToModel()
+	pass, err := usr.Password.GererateHashedPassword()
 	if err != nil {
 		return nil, err
 	}
-	userInput.Password = hashpassword.NewPassword(pass)
-	err = s.userRepo.R_Create(ctx, &userInput)
+	usr.Password = hashpassword.NewPassword(pass)
+	err = s.userRepo.R_Create(ctx, usr)
 	if err != nil {
 		return nil, err
 	}
-	userInput.Password.Set("")
-	return &userInput, nil
+	usr.Password.Set("")
+	return usr, nil
 }

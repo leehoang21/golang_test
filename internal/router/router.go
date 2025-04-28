@@ -18,5 +18,7 @@ func (handlerFuncs HandlerFuncs) Create(mid middleware.Middleware) *gin.Engine {
 	api.GET("/swagger/*any", swagger.WrapHandler(swaggerFiles.Handler))
 	handlerFuncs.createAuthGroup(api, mid, "/auth")
 	handlerFuncs.createUserGroup(api, mid, "/users")
+	handlerFuncs.createGroupRoleGroup(api, mid, "/group-roles")
+	handlerFuncs.createFeatureGroup(api, mid, "/features")
 	return root
 }

@@ -14,5 +14,26 @@ type HandlerFuncs struct {
 	// auth
 	LoginHandler  gin.HandlerFunc
 	LogoutHandler gin.HandlerFunc
+
+	//group role
+	GroupRoleCreateHandler        gin.HandlerFunc
+	GroupRoleUpdateHandler        gin.HandlerFunc
+	GroupRoleDeleteHandler        gin.HandlerFunc
+	GroupRoleListHandler          gin.HandlerFunc
+	GroupRoleGetHandler           gin.HandlerFunc
+	GroupRoleAddMembersHandler    gin.HandlerFunc
+	GroupRoleUpdateMembersHandler gin.HandlerFunc
+	GroupRoleDeleteMembersHandler gin.HandlerFunc
+
+	//feature
+	FeatureCreateHandler           gin.HandlerFunc
+	FeatureUpdateHandler           gin.HandlerFunc
+	FeatureDeleteHandler           gin.HandlerFunc
+	FeatureListHandler             gin.HandlerFunc
+	FeatureGetHandler              gin.HandlerFunc
+	FeatureAddPermissionHandler    gin.HandlerFunc
+	FeatureUpdatePermissionHandler gin.HandlerFunc
+	FeatureDeletePermissionHandler gin.HandlerFunc
+
 	// push api
 }

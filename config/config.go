@@ -6,7 +6,7 @@ import (
 )
 
 type Config struct {
-	Port string `ENV:"EV_SV_PORT"`
+	Port string `env:"EV_SV_PORT"`
 	DB
 }
 

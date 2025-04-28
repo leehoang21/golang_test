@@ -7,6 +7,8 @@ import (
 	"base/internal/repository/querymgo"
 	"base/internal/router"
 	"base/internal/router/middleware"
+	"base/internal/service/feature"
+	"base/internal/service/group_role"
 	"base/internal/service/token"
 	"base/internal/service/user"
 	"base/internal/utils/validator"
@@ -37,17 +39,25 @@ import (
 // @BasePath
 func main() {
 	var ctx = context.Background()
-	var db = connection.ConnectDB(ctx, config.LoadEnv().DB)
+	var cf = config.LoadEnv()
+	var db = connection.ConnectDB(ctx, cf.DB)
 	var userRepo = querymgo.NewUserRepo(db, "users", "usr")
 	var tokenRepo = querymgo.NewTokenRepo(db, "tokens", "tk")
+	var groupRoleRepo = querymgo.NewRoleRepo(db, "group_roles", "gr")
+	var featureRepo = querymgo.NewFeatureRepo(db, "features", "ft")
 
 	var validatorService = validator.NewValidator()
 	var userService = user.NewUserService(userRepo, validatorService)
 	var tokenService = token.NewTokenService(tokenRepo, validatorService)
+	var gRoleService = group_role.NewGroupRoleService(groupRoleRepo, validatorService)
+	var featureService = feature.NewFeatureService(featureRepo, validatorService)
+
 	contextWith := web.NewContextWith()
-	mid := middleware.NewMiddleware(tokenRepo, userRepo, contextWith)
+	mid := middleware.NewMiddleware(tokenRepo, userRepo, groupRoleRepo, featureRepo, contextWith)
 
 	handlerUser := handler.NewUserHandler(userService, tokenService, contextWith)
+	handlerGroupRole := handler.NewGroupRoleHandler(gRoleService, tokenService, contextWith)
+	handlerFeature := handler.NewFeatureHandler(featureService, contextWith)
 	var rounterFuncs = router.HandlerFuncs{
 		UserCreateHandler:    handlerUser.CreateHandler,
 		UserUpdateHandler:    handlerUser.UpdateHandler,
@@ -58,9 +68,24 @@ func main() {
 
 		LogoutHandler: handlerUser.LogoutHandler,
 		LoginHandler:  handlerUser.LoginHandler,
+
+		GroupRoleCreateHandler: handlerGroupRole.CreateHandler,
+		GroupRoleUpdateHandler: handlerGroupRole.UpdateHandler,
+		GroupRoleListHandler:   handlerGroupRole.GetListHandler,
+		GroupRoleDeleteHandler: handlerGroupRole.DeleteHandler,
+		GroupRoleGetHandler:    handlerGroupRole.GetHandler,
+
+		FeatureCreateHandler: handlerFeature.CreateHandler,
+		FeatureUpdateHandler: handlerFeature.UpdateHandler,
+		FeatureListHandler:   handlerFeature.GetListHandler,
+		FeatureDeleteHandler: handlerFeature.DeleteHandler,
+		FeatureGetHandler:    handlerFeature.GetHandler,
 	}
 
 	routerApi := rounterFuncs.Create(mid)
 
-	routerApi.Run(":8080")
+	err := routerApi.Run()
+	if err != nil {
+		return
+	}
 }

@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"base/internal/models"
 	"base/internal/service/auth"
 	"base/internal/service/token"
 	"base/internal/service/user"
@@ -30,10 +29,10 @@ func (u UserHandler) LoginHandler(ctx *gin.Context) {
 		UserID:   us.ID,
 		Platform: f.Platform,
 	}
-	token, err := u.tokenService.Create(ctx, tkInput)
+	tok, err := u.tokenService.Create(ctx, tkInput)
 	web.AssertNil(err)
 	u.SendData(ctx, auth.ResponseLogin{
-		AccessToken: token.ID,
+		AccessToken: tok.ID,
 		User:        us,
 	})
 }
@@ -50,8 +49,8 @@ func (u UserHandler) LoginHandler(ctx *gin.Context) {
 // @Success      200        {object}  models.User
 // @Router       /api/v1/users [put]
 func (u UserHandler) LogoutHandler(ctx *gin.Context) {
-	var f models.User
-	web.AssertNil(ctx.BindJSON(&f))
+	//var f models.User
+	//web.AssertNil(ctx.BindJSON(&f))
 	userID, err := u.contextWith.GetUserID(ctx)
 	web.AssertNil(err)
 	err = u.tokenService.RevokeAllByUserID(ctx, userID)

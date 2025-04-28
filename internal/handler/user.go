@@ -2,7 +2,6 @@ package handler
 
 import (
 	"base/internal/handler/filter"
-	"base/internal/models"
 	"base/internal/service/token"
 	"base/internal/service/user"
 	"base/internal/utils/web"
@@ -41,9 +40,9 @@ func NewUserHandler(
 // @Success      200        {object}  models.User
 // @Router       /api/v1/users [post]
 func (u UserHandler) CreateHandler(ctx *gin.Context) {
-	var f models.User
-	web.AssertNil(ctx.BindJSON(&f))
-	var us, err = u.userService.Create(ctx.Request.Context(), f)
+	var input user.UserInput
+	web.AssertNil(ctx.BindJSON(&input))
+	var us, err = u.userService.Create(ctx.Request.Context(), input)
 	web.AssertNil(err)
 	u.SendData(ctx, us)
 }
@@ -60,10 +59,11 @@ func (u UserHandler) CreateHandler(ctx *gin.Context) {
 // @Success      200        {object}  models.User
 // @Router       /api/v1/users [put]
 func (u UserHandler) UpdateHandler(ctx *gin.Context) {
-	var f models.User
-	web.AssertNil(ctx.BindJSON(&f))
-	id := ctx.Param("id")
-	var us, err = u.userService.Update(ctx.Request.Context(), id, &f)
+	var input user.UserInput
+	web.AssertNil(ctx.BindJSON(&input))
+	userID, e := u.contextWith.GetUserID(ctx)
+	web.AssertNil(e)
+	var us, err = u.userService.Update(ctx.Request.Context(), userID, input)
 	web.AssertNil(err)
 	u.SendData(ctx, us)
 }
@@ -79,8 +79,12 @@ func (u UserHandler) UpdateHandler(ctx *gin.Context) {
 // @Success      200        {object}  null
 // @Router       /api/v1/users/:id [delete]
 func (u UserHandler) DeleteHandler(ctx *gin.Context) {
-	id := ctx.Query("id")
-	err := u.userService.Delete(ctx.Request.Context(), id)
+	id := ctx.Param("id")
+	userID, err := u.contextWith.GetUserID(ctx)
+	if id == userID || err != nil {
+		web.AssertNil(web.Forbidden("access denied"))
+	}
+	err = u.userService.Delete(ctx.Request.Context(), id)
 	web.AssertNil(err)
 	u.SendData(ctx, nil)
 }
@@ -136,13 +140,15 @@ func (u UserHandler) GetHandler(ctx *gin.Context) {
 // @Param        id  	    in:query  string       false  "user id"
 // @Param        data       body      user.UserResetPassInput  true   "user data"
 // @Success      200        {object}  models.User
-// @Router       /api/v1/users [put]
+// @Router       /api/v1/users/reset-pass [put]
 func (u UserHandler) ResetPassHandler(ctx *gin.Context) {
 	var f user.UserResetPassInput
 	web.AssertNil(ctx.BindJSON(&f))
-	id := ctx.Param("id")
-	var us, err = u.userService.ResetPass(ctx.Request.Context(), id, f)
+	userID, e := u.contextWith.GetUserID(ctx)
+	web.AssertNil(e)
+	var us, err = u.userService.ResetPass(ctx.Request.Context(), userID, f)
 	web.AssertNil(err)
-	u.tokenService.RevokeAllByUserID(ctx, id)
+	err = u.tokenService.RevokeAllByUserID(ctx, userID)
+	web.AssertNil(err)
 	u.SendData(ctx, us)
 }

@@ -5,7 +5,6 @@ import (
 	hashpassword "base/internal/utils/hash_password"
 	"base/internal/utils/web"
 	"context"
-	"fmt"
 )
 
 type LoginInput struct {
@@ -16,7 +15,6 @@ type LoginInput struct {
 }
 
 func (s *userService) Login(ctx context.Context, input LoginInput) (u *models.User, err error) {
-	fmt.Println(input.Email)
 	if input.Email != "" {
 		u, err = s.userRepo.GetByEmail(ctx, input.Email)
 		if err != nil {

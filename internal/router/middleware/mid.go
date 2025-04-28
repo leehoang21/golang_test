@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"base/internal/base/mlog"
+	"base/internal/models"
 	"base/internal/repository"
 	"base/internal/utils/web"
 	"fmt"
@@ -12,33 +13,38 @@ import (
 )
 
 type Middleware interface {
-	MidBasicType(role ...string) gin.HandlerFunc
+	MidBasicType(groupName string) gin.HandlerFunc
 	Recovery() gin.HandlerFunc
 }
 
 func NewMiddleware(tokenRepo repository.Token,
 	userRepo repository.User,
+	roleRepo repository.GroupRole,
+	featureRepo repository.Feature,
 	contextWith web.ContextWith,
+
 ) Middleware {
 	return &mid{
 		ContextWith: contextWith,
 		tokenRepo:   tokenRepo,
 		userRepo:    userRepo,
+		roleRepo:    roleRepo,
+		featureRepo: featureRepo,
 	}
 }
 
 type mid struct {
 	web.ContextWith
 	web.JsonRender
-	tokenRepo repository.Token
-	userRepo  repository.User
+	tokenRepo   repository.Token
+	userRepo    repository.User
+	roleRepo    repository.GroupRole
+	featureRepo repository.Feature
 }
 
-func (m mid) MidBasicType(role ...string) gin.HandlerFunc {
+func (m mid) MidBasicType(groupName string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		fmt.Println("vo day")
 		var tokenID = m.GetToken(ctx.Request)
-		fmt.Println("vo da id")
 		var tok, err = m.tokenRepo.GetByID(ctx, tokenID)
 		if err != nil || tok == nil {
 			err = web.Unauthorized("access token not found")
@@ -46,9 +52,54 @@ func (m mid) MidBasicType(role ...string) gin.HandlerFunc {
 			ctx.Abort()
 			return
 		}
+		var us models.User
+		err = m.userRepo.R_SelectByID(ctx, tok.UserID, &us)
+		if err != nil {
+			err = web.Unauthorized("user not found")
+			m.SendErrorForce(ctx, err, http.StatusUnauthorized)
+			ctx.Abort()
+			return
+		}
 		m.SetUserID(ctx, tok.UserID)
-		ctx.Next()
+		//check permission
+		permission(groupName, m, ctx)
+
 	}
+}
+
+func permission(groupName string, m mid, ctx *gin.Context) {
+	if groupName == "" {
+		ctx.Next()
+		return
+	}
+	f, err := m.featureRepo.GetByApi(ctx, groupName)
+	if err != nil || len(f.RoleNames) == 0 {
+		err = web.Forbidden("access denied")
+		m.SendErrorForce(ctx, err, http.StatusForbidden)
+		ctx.Abort()
+		return
+	}
+
+	userId, err := m.GetUserID(ctx)
+	if userId == "" || err != nil {
+		err = web.Forbidden("access denied")
+		m.SendErrorForce(ctx, err, http.StatusForbidden)
+		ctx.Abort()
+		return
+	}
+	gRoles, err := m.roleRepo.GetByUserID(ctx, userId)
+	for _, p := range f.RoleNames {
+		for _, g := range gRoles {
+			if g.Name == p {
+				ctx.Next()
+				return
+			}
+		}
+
+	}
+	err = web.Forbidden("access denied")
+	m.SendErrorForce(ctx, err, http.StatusForbidden)
+	ctx.Abort()
 }
 
 var logMiddle = mlog.NewTagLog("middle")
