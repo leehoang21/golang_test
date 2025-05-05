@@ -53,7 +53,7 @@ func featureGroupRole() feature.Input {
 		Name:      "group_role",
 		KeyMenu:   "/group_roles",
 		URLView:   "/group_roles",
-		Api:       "/group_roles",
+		Api:       "/group-roles",
 		Action:    []string{"/group_roles [post]", "/group_roles [get]", "/group_roles/:id [get]", "/group_roles/:id [delete]"},
 		Status:    enums.StatustypeEnabled.String(),
 		RoleNames: []string{"admin"},
