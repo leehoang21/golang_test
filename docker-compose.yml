@@ -7,8 +7,8 @@ services:
       dockerfile: ./Dockerfile
     ports:
       - ${EV_PORT}:${EV_PORT}
-    volumes:
-      - .:/app
+#    volumes:
+#      - .:/app
     network_mode: "host"
     environment:
       EV_PORT: ${EV_PORT}
