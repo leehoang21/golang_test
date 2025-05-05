@@ -6,12 +6,12 @@ services:
       context: .
       dockerfile: ./Dockerfile
     ports:
-      - ${PORT}:${PORT}
+      - ${EV_PORT}:${EV_PORT}
     volumes:
       - .:/app
     network_mode: "host"
     environment:
-      PORT: ${EV_PORT}
+      EV_PORT: ${EV_PORT}
       PATH: "mongodb://docker:docker@0.0.0.0:27017"
       DB_USER: ${EV_DB_USER}
       DB_PASS: ${EV_DB_PASS}
