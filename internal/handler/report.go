@@ -2,7 +2,7 @@ package handler
 
 import (
 	"base/internal/notification"
-	"base/internal/service/Report"
+	"base/internal/service/report"
 	"base/internal/utils/web"
 
 	"github.com/gin-gonic/gin"
