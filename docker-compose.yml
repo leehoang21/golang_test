@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: ./Dockerfile
     ports:
-      - ${EV_PORT}:${EV_PORT}
+        - "8080:8080"
 #    volumes:
 #      - .:/app
     network_mode: "host"
@@ -18,7 +18,6 @@ services:
       DB_NAME: ${EV_DB_NAME}
     command: ./app
     restart: always
-
 
   mongo:
     image: mongo
