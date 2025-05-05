@@ -19,7 +19,9 @@ func (s *groupRoleService) Update(ctx context.Context, id string, roleInput Grou
 		return nil, web.BadRequest("group role name đã tồn tại")
 	}
 
+	baseModel := rExist.BaseModel
 	rExist = roleInput.ToModel()
+	rExist.BaseModel = baseModel
 	rExist.ID = id
 	err := s.repos.R_Update(ctx, rExist)
 	if err != nil {

@@ -14,7 +14,4 @@ func (handlerFuncs HandlerFuncs) createGroupRoleGroup(g *gin.RouterGroup,
 	groupRoleGroup.GET("", handlerFuncs.GroupRoleListHandler)
 	groupRoleGroup.GET("/:id", handlerFuncs.GroupRoleGetHandler)
 	groupRoleGroup.DELETE("/:id", handlerFuncs.GroupRoleDeleteHandler)
-	groupRoleGroup.POST("/members", handlerFuncs.GroupRoleAddMembersHandler)
-	groupRoleGroup.PUT("/members/:id", handlerFuncs.GroupRoleUpdateMembersHandler)
-	groupRoleGroup.DELETE("/members/:id", handlerFuncs.GroupRoleDeleteMembersHandler)
 }

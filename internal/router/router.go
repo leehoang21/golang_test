@@ -20,5 +20,8 @@ func (handlerFuncs HandlerFuncs) Create(mid middleware.Middleware) *gin.Engine {
 	handlerFuncs.createUserGroup(api, mid, "/users")
 	handlerFuncs.createGroupRoleGroup(api, mid, "/group-roles")
 	handlerFuncs.createFeatureGroup(api, mid, "/features")
+	handlerFuncs.createTaskGroup(api, mid, "/tasks")
+	handlerFuncs.createEstimateGroup(api, mid, "/estimates")
+	handlerFuncs.createReportGroup(api, "/reports")
 	return root
 }

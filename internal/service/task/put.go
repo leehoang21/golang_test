@@ -1,4 +1,4 @@
-package feature
+package task
 
 import (
 	"base/internal/models"
@@ -6,24 +6,25 @@ import (
 	"context"
 )
 
-func (s *featureService) Update(ctx context.Context, id string, input Input) (*models.Feature, error) {
+func (s *taskService) Update(ctx context.Context, id string, input Input) (*models.Task, error) {
 	if err := s.validator.ValidateStruct(input); err != nil {
 		return nil, err
 	}
 
-	var rExist *models.Feature
+	var rExist *models.Task
 	if err := s.repos.R_SelectByID(ctx, id, &rExist); err != nil {
 		return nil, err
 	}
-	if f, _ := s.repos.GetByName(ctx, input.Name); f != nil && id != f.ID {
-		return nil, web.BadRequest("feature name đã tồn tại")
+	if title, _ := s.repos.GetByTitle(ctx, input.Title); title != nil && id != title.ID {
+		return nil, web.BadRequest("Task title đã tồn tại")
 	}
-
+	createByEmail := rExist.CreatedByEmail
 	baseModel := rExist.BaseModel
 
 	rExist = input.ToModel()
-	rExist.BaseModel = baseModel
 	rExist.ID = id
+	rExist.CreatedByEmail = createByEmail
+	rExist.BaseModel = baseModel
 	err := s.repos.R_Update(ctx, rExist)
 	if err != nil {
 		return nil, err

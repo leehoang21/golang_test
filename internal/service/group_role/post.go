@@ -14,6 +14,7 @@ func (s *groupRoleService) Create(ctx context.Context, roleInput GroupRoleInput)
 	if role, _ := s.repos.GetByName(ctx, roleInput.Name); role != nil {
 		return nil, web.BadRequest("group role name đã tồn tại")
 	}
+
 	role := roleInput.ToModel()
 	err := s.repos.R_Create(ctx, role)
 	if err != nil {

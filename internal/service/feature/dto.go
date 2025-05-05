@@ -1,7 +1,6 @@
 package feature
 
 import (
-	"base/internal/data/enums"
 	"base/internal/models"
 )
 
@@ -12,17 +11,18 @@ type Input struct {
 	Api       string   `json:"api" validate:"required"`
 	Action    []string `json:"action" validate:"required"`
 	Status    string   `json:"status" validate:"required"`
-	RoleNames []string `json:"role_names" bson:"role_names" validate:"required"`
+	RoleNames []string `json:"role_names" bson:"role_names"`
 }
 
-func (f Input) ToModel() *models.Feature {
+func (i Input) ToModel() *models.Feature {
 	return &models.Feature{
-		Name:      f.Name,
-		KeyMenu:   f.KeyMenu,
-		URLView:   f.URLView,
-		Api:       f.Api,
-		Action:    f.Action,
-		Status:    enums.StringToStatusType(f.Status),
-		RoleNames: f.RoleNames,
+		Name:      i.Name,
+		KeyMenu:   i.KeyMenu,
+		URLView:   i.URLView,
+		Api:       i.Api,
+		Action:    i.Action,
+		Status:    i.Status,
+		RoleNames: i.RoleNames,
 	}
+
 }

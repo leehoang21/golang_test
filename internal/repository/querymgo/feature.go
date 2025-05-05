@@ -38,35 +38,44 @@ func (u featureRepository) GetByID(ctx context.Context, id string) (*models.Feat
 	var result *models.Feature
 
 	pipeline := mongo.Pipeline{
-		{{"$match", bson.D{{"_id", id}}}},
+		{{"$match", bson.D{
+			{"_id", id},
+			{"dtime", 0},
+		}}},
 		{{"$limit", 1}},
 		{{"$lookup", bson.D{
 			{"from", "group_roles"},
-			{"localField", "role_names"},
-			{"foreignField", "name"},
+			{"let", bson.D{{"role_names", "$role_names"}}},
+			{"pipeline", bson.A{
+				bson.D{{"$match", bson.D{
+					{"$expr", bson.D{
+						{"$and", bson.A{
+							bson.D{{"$in", bson.A{"$name", "$$role_names"}}},
+							bson.D{{"$eq", bson.A{"$dtime", 0}}},
+						}},
+					}},
+				}}},
+			}},
 			{"as", "roles"},
 		}}},
 		{{"$unwind", bson.D{
 			{"path", "$roles"},
 			{"preserveNullAndEmptyArrays", true},
 		}}},
-		{{"$lookup", bson.D{
-			{"from", "users"},
-			{"localField", "roles.member_ids"},
-			{"foreignField", "_id"},
-			{"as", "roles.members"},
-		}}},
 		{{"$group", bson.D{
 			{"_id", "$_id"},
+			{"ctime", bson.D{{"$first", "$ctime"}}},
+			{"mtime", bson.D{{"$first", "$mtime"}}},
+			{"dtime", bson.D{{"$first", "$dtime"}}},
 			{"name", bson.D{{"$first", "$name"}}},
 			{"key_menu", bson.D{{"$first", "$key_menu"}}},
 			{"url_view", bson.D{{"$first", "$url_view"}}},
 			{"api", bson.D{{"$first", "$api"}}},
 			{"action", bson.D{{"$first", "$action"}}},
 			{"status", bson.D{{"$first", "$status"}}},
-			{"role_names", bson.D{{"$first", "$role_names"}}},
-			{"roles", bson.D{{"$push", "$roles"}}}}},
-		}}
+			{"roles", bson.D{{"$push", "$roles"}}},
+		}}},
+	}
 
 	showInfoCursor, err := u.Aggregate(ctx, pipeline)
 	if err != nil {

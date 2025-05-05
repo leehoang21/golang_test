@@ -1,6 +1,7 @@
 package web
 
 import (
+	"base/internal/models"
 	"net/http"
 	"net/url"
 	"strings"
@@ -9,8 +10,8 @@ import (
 )
 
 type ContextWith interface {
-	SetUserID(ctx *gin.Context, uID string)
-	GetUserID(ctx *gin.Context) (string, error)
+	SetUser(ctx *gin.Context, u models.User)
+	GetUser(ctx *gin.Context) (*models.User, error)
 	GetToken(r *http.Request) string
 	GetTokenSocket(r http.Header, requets url.URL) string
 	GetTokenPublic(r *http.Request) string
@@ -21,23 +22,28 @@ func NewContextWith() ContextWith {
 }
 
 type ClientCache struct {
-	Token  string
-	UserID string
+	Token string
+	User  models.User
 }
 
 const xCacheClient = "x-cache-client"
-const xUserID = "x-user-id"
+const xUser = "x-user"
 
-func (c *ClientCache) GetUserID(ctx *gin.Context) (string, error) {
-	uID := ctx.GetString(xUserID)
-	if uID == "" {
-		return uID, BadRequest("user-id not found")
+func (c *ClientCache) GetUser(ctx *gin.Context) (*models.User, error) {
+	u, isExit := ctx.Get(xUser)
+	if !isExit {
+		return nil, BadRequest("user not found")
 	}
-	return uID, nil
+	//check type
+	user, ok := u.(models.User)
+	if !ok {
+		return nil, BadRequest("user not found")
+	}
+	return &user, nil
 }
 
-func (c *ClientCache) SetUserID(ctx *gin.Context, uID string) {
-	ctx.Set(xUserID, uID)
+func (c *ClientCache) SetUser(ctx *gin.Context, u models.User) {
+	ctx.Set(xUser, u)
 }
 
 func (c *ClientCache) ContextWithUser(ctx *gin.Context, u *ClientCache) {

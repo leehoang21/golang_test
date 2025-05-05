@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"base/internal/base/mlog"
+	"base/internal/data/enums"
 	"base/internal/models"
 	"base/internal/repository"
 	"base/internal/utils/web"
@@ -60,33 +61,26 @@ func (m mid) MidBasicType(groupName string) gin.HandlerFunc {
 			ctx.Abort()
 			return
 		}
-		m.SetUserID(ctx, tok.UserID)
+		m.SetUser(ctx, us)
 		//check permission
-		permission(groupName, m, ctx)
+		permission(tok.UserID, m, ctx, groupName)
 
 	}
 }
 
-func permission(groupName string, m mid, ctx *gin.Context) {
+func permission(userId string, m mid, ctx *gin.Context, groupName string) {
 	if groupName == "" {
 		ctx.Next()
 		return
 	}
 	f, err := m.featureRepo.GetByApi(ctx, groupName)
-	if err != nil || len(f.RoleNames) == 0 {
+	if err != nil || len(f.RoleNames) == 0 || f.Status != enums.StatustypeEnabled.String() {
 		err = web.Forbidden("access denied")
 		m.SendErrorForce(ctx, err, http.StatusForbidden)
 		ctx.Abort()
 		return
 	}
 
-	userId, err := m.GetUserID(ctx)
-	if userId == "" || err != nil {
-		err = web.Forbidden("access denied")
-		m.SendErrorForce(ctx, err, http.StatusForbidden)
-		ctx.Abort()
-		return
-	}
 	gRoles, err := m.roleRepo.GetByUserID(ctx, userId)
 	for _, p := range f.RoleNames {
 		for _, g := range gRoles {

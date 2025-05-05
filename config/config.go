@@ -8,6 +8,7 @@ import (
 type Config struct {
 	Port string `env:"EV_SV_PORT"`
 	DB
+	TelegramConfig
 }
 
 type DB struct {
@@ -15,6 +16,11 @@ type DB struct {
 	DBUser string `env:"EV_DB_USER" envDefault:""`
 	DBPass string `env:"EV_DB_PASS" envDefault:""`
 	Path   string `env:"EV_DB_PATH" envDefault:"mongodb://localhost:27017"`
+}
+
+type TelegramConfig struct {
+	BotToken string `env:"EV_BOT_TOKEN" envDefault:""`
+	ChanelID string `env:"EV_CHANNEL_ID" envDefault:""`
 }
 
 var config Config

@@ -10,30 +10,38 @@ type HandlerFuncs struct {
 	UserDeleteHandler    gin.HandlerFunc
 	UserListHandler      gin.HandlerFunc
 	UserGetHandler       gin.HandlerFunc
+	UserProfileHandler   gin.HandlerFunc
 
 	// auth
 	LoginHandler  gin.HandlerFunc
 	LogoutHandler gin.HandlerFunc
 
 	//group role
-	GroupRoleCreateHandler        gin.HandlerFunc
-	GroupRoleUpdateHandler        gin.HandlerFunc
-	GroupRoleDeleteHandler        gin.HandlerFunc
-	GroupRoleListHandler          gin.HandlerFunc
-	GroupRoleGetHandler           gin.HandlerFunc
-	GroupRoleAddMembersHandler    gin.HandlerFunc
-	GroupRoleUpdateMembersHandler gin.HandlerFunc
-	GroupRoleDeleteMembersHandler gin.HandlerFunc
+	GroupRoleCreateHandler gin.HandlerFunc
+	GroupRoleUpdateHandler gin.HandlerFunc
+	GroupRoleDeleteHandler gin.HandlerFunc
+	GroupRoleListHandler   gin.HandlerFunc
+	GroupRoleGetHandler    gin.HandlerFunc
 
 	//feature
-	FeatureCreateHandler           gin.HandlerFunc
-	FeatureUpdateHandler           gin.HandlerFunc
-	FeatureDeleteHandler           gin.HandlerFunc
-	FeatureListHandler             gin.HandlerFunc
-	FeatureGetHandler              gin.HandlerFunc
-	FeatureAddPermissionHandler    gin.HandlerFunc
-	FeatureUpdatePermissionHandler gin.HandlerFunc
-	FeatureDeletePermissionHandler gin.HandlerFunc
+	FeatureCreateHandler gin.HandlerFunc
+	FeatureUpdateHandler gin.HandlerFunc
+	FeatureDeleteHandler gin.HandlerFunc
+	FeatureListHandler   gin.HandlerFunc
+	FeatureGetHandler    gin.HandlerFunc
 
-	// push api
+	// task
+	TaskCreateHandler gin.HandlerFunc
+	TaskUpdateHandler gin.HandlerFunc
+	TaskDeleteHandler gin.HandlerFunc
+	TaskListHandler   gin.HandlerFunc
+	TaskGetHandler    gin.HandlerFunc
+	//estimate
+	EstimateCreateHandler gin.HandlerFunc
+	EstimateUpdateHandler gin.HandlerFunc
+	EstimateDeleteHandler gin.HandlerFunc
+	EstimateGetHandler    gin.HandlerFunc
+
+	//report
+	SendTelegramReportHandler gin.HandlerFunc
 }

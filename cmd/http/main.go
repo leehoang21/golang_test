@@ -4,11 +4,15 @@ import (
 	"base/config"
 	"base/internal/handler"
 	_ "base/internal/init"
+	"base/internal/notification"
 	"base/internal/repository/querymgo"
 	"base/internal/router"
 	"base/internal/router/middleware"
+	"base/internal/service/Report"
+	"base/internal/service/estimate"
 	"base/internal/service/feature"
 	"base/internal/service/group_role"
+	"base/internal/service/task"
 	"base/internal/service/token"
 	"base/internal/service/user"
 	"base/internal/utils/validator"
@@ -41,16 +45,22 @@ func main() {
 	var ctx = context.Background()
 	var cf = config.LoadEnv()
 	var db = connection.ConnectDB(ctx, cf.DB)
+	var sender = notification.NewSender(cf.TelegramConfig)
 	var userRepo = querymgo.NewUserRepo(db, "users", "usr")
 	var tokenRepo = querymgo.NewTokenRepo(db, "tokens", "tk")
 	var groupRoleRepo = querymgo.NewRoleRepo(db, "group_roles", "gr")
 	var featureRepo = querymgo.NewFeatureRepo(db, "features", "ft")
+	var taskRepo = querymgo.NewTaskRepo(db, "tasks", "t")
+	var estimateRepo = querymgo.NewEstimateRepo(db, "estimates", "es")
 
 	var validatorService = validator.NewValidator()
 	var userService = user.NewUserService(userRepo, validatorService)
 	var tokenService = token.NewTokenService(tokenRepo, validatorService)
 	var gRoleService = group_role.NewGroupRoleService(groupRoleRepo, validatorService)
 	var featureService = feature.NewFeatureService(featureRepo, validatorService)
+	var taskService = task.NewtaskService(taskRepo, validatorService)
+	var estimateService = estimate.NewestimateService(estimateRepo, validatorService)
+	var reportService = report.NewReportService(taskRepo, validatorService)
 
 	contextWith := web.NewContextWith()
 	mid := middleware.NewMiddleware(tokenRepo, userRepo, groupRoleRepo, featureRepo, contextWith)
@@ -58,6 +68,10 @@ func main() {
 	handlerUser := handler.NewUserHandler(userService, tokenService, contextWith)
 	handlerGroupRole := handler.NewGroupRoleHandler(gRoleService, contextWith)
 	handlerFeature := handler.NewFeatureHandler(featureService, contextWith)
+	handlerTask := handler.NewTaskHandler(taskService, contextWith)
+	handlerEstimate := handler.NewEstimateHandler(estimateService, contextWith)
+	handlerReport := handler.NewReportHandler(reportService, contextWith, sender)
+
 	var rounterFuncs = router.HandlerFuncs{
 		UserCreateHandler:    handlerUser.CreateHandler,
 		UserUpdateHandler:    handlerUser.UpdateHandler,
@@ -65,6 +79,7 @@ func main() {
 		UserListHandler:      handlerUser.GetListHandler,
 		UserDeleteHandler:    handlerUser.DeleteHandler,
 		UserGetHandler:       handlerUser.GetHandler,
+		UserProfileHandler:   handlerUser.ProfileHandler,
 
 		LogoutHandler: handlerUser.LogoutHandler,
 		LoginHandler:  handlerUser.LoginHandler,
@@ -80,6 +95,19 @@ func main() {
 		FeatureListHandler:   handlerFeature.GetListHandler,
 		FeatureDeleteHandler: handlerFeature.DeleteHandler,
 		FeatureGetHandler:    handlerFeature.GetHandler,
+
+		TaskCreateHandler: handlerTask.CreateHandler,
+		TaskUpdateHandler: handlerTask.UpdateHandler,
+		TaskListHandler:   handlerTask.GetListHandler,
+		TaskDeleteHandler: handlerTask.DeleteHandler,
+		TaskGetHandler:    handlerTask.GetHandler,
+
+		EstimateCreateHandler: handlerEstimate.CreateHandler,
+		EstimateUpdateHandler: handlerEstimate.UpdateHandler,
+		EstimateDeleteHandler: handlerEstimate.DeleteHandler,
+		EstimateGetHandler:    handlerEstimate.GetHandler,
+
+		SendTelegramReportHandler: handlerReport.SendTelegramReportHandler,
 	}
 
 	routerApi := rounterFuncs.Create(mid)

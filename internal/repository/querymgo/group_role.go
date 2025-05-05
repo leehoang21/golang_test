@@ -31,12 +31,24 @@ func (u groupRoleRepository) GetByID(ctx context.Context, id string) (*models.Gr
 	var role *models.GroupRole
 
 	pipeline := mongo.Pipeline{
-		{{"$match", bson.D{{"_id", id}}}},
+		{{"$match", bson.D{
+			{"_id", id},
+			{"dtime", 0},
+		}}},
 		{{"$limit", 1}},
 		{{"$lookup", bson.D{
 			{"from", "users"},
-			{"localField", "member_ids"},
-			{"foreignField", "_id"},
+			{"let", bson.D{{"member_ids", "$roles.member_ids"}}},
+			{"pipeline", bson.A{
+				bson.D{{"$match", bson.D{
+					{"$expr", bson.D{
+						{"$and", bson.A{
+							bson.D{{"$in", bson.A{"$_id", "$$member_ids"}}},
+							bson.D{{"$eq", bson.A{"$dtime", 0}}},
+						}},
+					}},
+				}}},
+			}},
 			{"as", "members"},
 		}}},
 	}
@@ -55,7 +67,6 @@ func (u groupRoleRepository) GetByID(ctx context.Context, id string) (*models.Gr
 		if err := showInfoCursor.Decode(&role); err != nil {
 			return nil, fmt.Errorf("decode error: %w", err)
 		}
-		role.MemberCount = len(role.MemberIds)
 		return role, nil
 	}
 

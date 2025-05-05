@@ -9,8 +9,8 @@ import (
 
 type FeatureListParams struct {
 	filter.PaginationFilter
-	FeatureName string           `json:"feature_name" form:"feature_name"`
-	Status      enums.StatusType `json:"status" form:"status"`
+	FeatureName string `json:"feature_name" form:"feature_name"`
+	Status      string `json:"status" form:"status"`
 }
 
 func NewFeatureListPrams() *FeatureListParams {
@@ -23,7 +23,7 @@ func (f *FeatureListParams) GetWhere() filter.Where {
 	if f.FeatureName != "" {
 		f.AddWhere("feature_name", "name", primitive.Regex{Pattern: f.FeatureName, Options: ""})
 	}
-	if f.Status.String() != "" || f.Status != enums.StatusType(2) {
+	if f.Status != "" || enums.StringToStatusType(f.Status) != enums.StatustypeUndefined {
 		f.AddWhere("status", "status", f.Status)
 	}
 	return f.BasicFilter.GetWhere()

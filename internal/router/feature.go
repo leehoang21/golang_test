@@ -14,7 +14,4 @@ func (handlerFuncs HandlerFuncs) createFeatureGroup(g *gin.RouterGroup,
 	groupRoleGroup.GET("", handlerFuncs.FeatureListHandler)
 	groupRoleGroup.GET("/:id", handlerFuncs.FeatureGetHandler)
 	groupRoleGroup.DELETE("/:id", handlerFuncs.FeatureDeleteHandler)
-	groupRoleGroup.POST("/permissions", handlerFuncs.FeatureAddPermissionHandler)
-	groupRoleGroup.PUT("/permissions/:id", handlerFuncs.FeatureUpdatePermissionHandler)
-	groupRoleGroup.DELETE("/permissions/:id", handlerFuncs.FeatureDeletePermissionHandler)
 }
