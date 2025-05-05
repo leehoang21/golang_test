@@ -47,27 +47,6 @@ func (u UserHandler) CreateHandler(ctx *gin.Context) {
 	u.SendData(ctx, us)
 }
 
-// UpdateHandler
-// @Tags         User
-// @Summary      Create user
-// @Description  Create user
-// @ID           user-update
-// @Accept       json
-// @Produce      json
-// @Param        x-user-id  header    string       false  "user id"
-// @Param        data       body      models.User  true   "user data"
-// @Success      200        {object}  models.User
-// @Router       /api/v1/users [put]
-func (u UserHandler) UpdateHandler(ctx *gin.Context) {
-	var input user.Input
-	web.AssertNil(ctx.BindJSON(&input))
-	userID, e := u.contextWith.GetUserID(ctx)
-	web.AssertNil(e)
-	var us, err = u.userService.Update(ctx.Request.Context(), userID, input)
-	web.AssertNil(err)
-	u.SendData(ctx, us)
-}
-
 // DeleteHandler
 // @Tags         User
 // @Summary      delete user
@@ -80,8 +59,8 @@ func (u UserHandler) UpdateHandler(ctx *gin.Context) {
 // @Router       /api/v1/users/:id [delete]
 func (u UserHandler) DeleteHandler(ctx *gin.Context) {
 	id := ctx.Param("id")
-	userID, err := u.contextWith.GetUserID(ctx)
-	if id == userID || err != nil {
+	getUser, err := u.contextWith.GetUser(ctx)
+	if id == getUser.ID || err != nil {
 		web.AssertNil(web.Forbidden("access denied"))
 	}
 	err = u.userService.Delete(ctx.Request.Context(), id)
@@ -121,12 +100,51 @@ func (u UserHandler) GetListHandler(ctx *gin.Context) {
 // @Param        x-user-id  header    string       false  "user get"
 // @Param        id       in:query    string  true   "user id"
 // @Success      200        {object}  models.User
-// @Router       /api/v1/users [get]
+// @Router       /api/v1/users/:id [get]
 func (u UserHandler) GetHandler(ctx *gin.Context) {
 	id := ctx.Param("id")
 	var us, err = u.userService.GetByID(ctx.Request.Context(), id)
 	web.AssertNil(err)
 	u.SendData(ctx, us)
+}
+
+// UpdateHandler
+// @Tags         User
+// @Summary      Create user
+// @Description  Create user
+// @ID           user-update
+// @Accept       json
+// @Produce      json
+// @Param        x-user-id  header    string       false  "user id"
+// @Param        data       body      models.User  true   "user data"
+// @Success      200        {object}  models.User
+// @Router       /api/v1/users [put]
+func (u UserHandler) UpdateHandler(ctx *gin.Context) {
+	var input user.Input
+	web.AssertNil(ctx.BindJSON(&input))
+	getUser, e := u.contextWith.GetUser(ctx)
+	web.AssertNil(e)
+	var us, err = u.userService.Update(ctx.Request.Context(), getUser.ID, input)
+	web.AssertNil(err)
+	u.SendData(ctx, us)
+}
+
+// ProfileHandler
+// @Tags         User
+// @Summary      get  user
+// @Description  get  user
+// @ID           user-get
+// @Accept       json
+// @Produce      json
+// @Param        x-user-id  header    string       false  "user get"
+// @Param        id       in:query    string  true   "user id"
+// @Success      200        {object}  models.User
+// @Router       /api/v1/users [get]
+func (u UserHandler) ProfileHandler(ctx *gin.Context) {
+	getUser, e := u.contextWith.GetUser(ctx)
+	getUser.Password = ""
+	web.AssertNil(e)
+	u.SendData(ctx, getUser)
 }
 
 // ResetPassHandler
@@ -144,11 +162,11 @@ func (u UserHandler) GetHandler(ctx *gin.Context) {
 func (u UserHandler) ResetPassHandler(ctx *gin.Context) {
 	var f user.ResetPassInput
 	web.AssertNil(ctx.BindJSON(&f))
-	userID, e := u.contextWith.GetUserID(ctx)
+	getUser, e := u.contextWith.GetUser(ctx)
 	web.AssertNil(e)
-	var us, err = u.userService.ResetPass(ctx.Request.Context(), userID, f)
+	var us, err = u.userService.ResetPass(ctx.Request.Context(), getUser.ID, f)
 	web.AssertNil(err)
-	err = u.tokenService.RevokeAllByUserID(ctx, userID)
+	err = u.tokenService.RevokeAllByUserID(ctx, getUser.ID)
 	web.AssertNil(err)
 	u.SendData(ctx, us)
 }

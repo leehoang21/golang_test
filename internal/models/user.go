@@ -9,7 +9,7 @@ type User struct {
 	model.BaseModel `bson:",inline"`
 	Email           string                `json:"email" bson:"email"`
 	Phone           string                `json:"phone" bson:"phone"`
-	Password        hashpassword.Password `json:"password,omitempty" bson:"password"`
+	Password        hashpassword.Password `json:"-" bson:"password"`
 	FullName        string                `json:"fullname" bson:"fullname"`
 	Birthday        string                `json:"birthday" bson:"birthday"`
 }

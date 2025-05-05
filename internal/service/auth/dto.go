@@ -1,6 +1,8 @@
 package auth
 
-import "base/internal/models"
+import (
+	"base/internal/models"
+)
 
 type ResponseLogin struct {
 	AccessToken string       `json:"access_token"`

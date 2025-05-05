@@ -10,15 +10,14 @@ type Input struct {
 	Phone    string `json:"phone" `
 	Password string `json:"password" `
 	Fullname string `json:"fullname" validate:"required"`
-	ZaloID   string `json:"zalo_id"`
 	Birthday string `json:"birthday"`
 }
 
 func (u Input) ToModel() *models.User {
 	return &models.User{
+		Password: hashpassword.Password(u.Password),
 		Email:    u.Email,
 		Phone:    u.Phone,
-		Password: hashpassword.NewPassword(u.Password),
 		FullName: u.Fullname,
 		Birthday: u.Birthday,
 	}

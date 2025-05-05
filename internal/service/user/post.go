@@ -26,9 +26,5 @@ func (s *userService) Create(ctx context.Context, userInput Input) (*models.User
 	}
 	usr.Password = hashpassword.NewPassword(pass)
 	err = s.userRepo.R_Create(ctx, usr)
-	if err != nil {
-		return nil, err
-	}
-	usr.Password.Set("")
-	return usr, nil
+	return usr, err
 }

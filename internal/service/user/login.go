@@ -31,6 +31,5 @@ func (s *userService) Login(ctx context.Context, input LoginInput) (u *models.Us
 	if err := u.Password.ComparePassword(hashpassword.NewPassword(input.Password)); err != nil {
 		return nil, web.Unauthorized("Mật khẩu sai")
 	}
-	u.Password = ""
 	return
 }

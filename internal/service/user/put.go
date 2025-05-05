@@ -5,7 +5,6 @@ import (
 	hashpassword "base/internal/utils/hash_password"
 	"base/internal/utils/web"
 	"context"
-	"log"
 )
 
 func (s *userService) Update(ctx context.Context, id string, input Input) (*models.User, error) {
@@ -18,12 +17,12 @@ func (s *userService) Update(ctx context.Context, id string, input Input) (*mode
 		return nil, err
 	}
 
-	uExist = input.ToModel()
-	uEmail, _ := s.userRepo.GetByEmail(ctx, uExist.Email)
-	log.Println(uEmail)
-	if uEmail, _ := s.userRepo.GetByEmail(ctx, uExist.Email); uEmail != nil && id != uEmail.ID {
+	if uEmail, _ := s.userRepo.GetByEmail(ctx, input.Email); uEmail != nil && id != uEmail.ID {
 		return nil, web.BadRequest("Email đã tồn tại")
 	}
+
+	baseModel := uExist.BaseModel
+	uExist = input.ToModel()
 	if uExist.Password.String() != "" {
 		pass, err := uExist.Password.GenerateHashedPassword()
 		if err != nil {
@@ -31,12 +30,11 @@ func (s *userService) Update(ctx context.Context, id string, input Input) (*mode
 		}
 		uExist.Password = hashpassword.NewPassword(pass)
 	}
+
+	uExist.BaseModel = baseModel
 	uExist.ID = id
 	err := s.userRepo.R_Update(ctx, uExist)
-	if err != nil {
-		return nil, err
-	}
-	return uExist, nil
+	return uExist, err
 }
 
 func (s *userService) ResetPass(ctx context.Context, id string, user ResetPassInput) (*models.User, error) {
@@ -54,8 +52,5 @@ func (s *userService) ResetPass(ctx context.Context, id string, user ResetPassIn
 	}
 	uExist.Password = hashpassword.NewPassword(pass)
 	err = s.userRepo.R_Update(ctx, uExist)
-	if err != nil {
-		return nil, err
-	}
-	return uExist, nil
+	return uExist, err
 }

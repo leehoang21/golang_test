@@ -51,9 +51,9 @@ func (u UserHandler) LoginHandler(ctx *gin.Context) {
 func (u UserHandler) LogoutHandler(ctx *gin.Context) {
 	//var f models.User
 	//web.AssertNil(ctx.BindJSON(&f))
-	userID, err := u.contextWith.GetUserID(ctx)
+	getUser, err := u.contextWith.GetUser(ctx)
 	web.AssertNil(err)
-	err = u.tokenService.RevokeAllByUserID(ctx, userID)
+	err = u.tokenService.RevokeAllByUserID(ctx, getUser.ID)
 	web.AssertNil(err)
 	u.SendData(ctx, nil)
 }

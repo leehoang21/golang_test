@@ -14,6 +14,7 @@ func (handlerFuncs HandlerFuncs) createUserGroup(g *gin.RouterGroup,
 	userGroup.GET("/:id", handlerFuncs.UserGetHandler)
 	userGroup.DELETE("/:id", handlerFuncs.UserDeleteHandler)
 
+	g.Group(groupName).Use(mid.MidBasicType("")).GET("/profile", handlerFuncs.UserProfileHandler)
 	g.Group(groupName).Use(mid.MidBasicType("")).PUT("", handlerFuncs.UserUpdateHandler)
 	g.Group(groupName).Use(mid.MidBasicType("")).PUT("/reset-pass", handlerFuncs.UserResetPassHandler)
 }
