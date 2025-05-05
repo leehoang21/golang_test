@@ -5,14 +5,17 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
+    ports:
+      - ${PORT}:${PORT}
     volumes:
       - .:/app
     network_mode: "host"
     environment:
+      PORT: ${EV_PORT}
       PATH: "mongodb://docker:docker@0.0.0.0:27017"
-      DB_USER: docker
-      DB_PASS: docker
-      DB_NAME: djm-master
+      DB_USER: ${EV_DB_USER}
+      DB_PASS: ${EV_DB_PASS}
+      DB_NAME: ${EV_DB_NAME}
     command: ./app
     restart: always
 

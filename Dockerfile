@@ -1,4 +1,4 @@
-FROM golang:1.18-alpine
+FROM golang:1.23-alpine3.20
 
 RUN apk add --no-cache musl-dev gcc make g++ file
 ENV GOPATH /go
