@@ -26,5 +26,6 @@ func (f *TaskListParams) GetWhere() filter.Where {
 	if f.Status != "" || enums.StringToTaskStatusType(f.Status) != enums.TaskStatusTypeUndefined {
 		f.AddWhere("status", "status", f.Status)
 	}
+	f.AddWhere("dtime", "dtime", 0)
 	return f.BasicFilter.GetWhere()
 }

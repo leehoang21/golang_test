@@ -27,5 +27,6 @@ func (f *GroupRoleListParams) GetWhere() filter.Where {
 	if f.Status != "" || enums.StringToStatusType(f.Status) != enums.StatustypeUndefined {
 		f.AddWhere("status", "status", f.Status)
 	}
+	f.AddWhere("dtime", "dtime", 0)
 	return f.BasicFilter.GetWhere()
 }

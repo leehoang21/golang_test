@@ -29,5 +29,6 @@ func (f *UserListParams) GetWhere() filter.Where {
 	if f.Phone != "" {
 		f.AddWhere("phone", "phone", primitive.Regex{Pattern: f.Phone, Options: ""})
 	}
+	f.AddWhere("dtime", "dtime", 0)
 	return f.BasicFilter.GetWhere()
 }
