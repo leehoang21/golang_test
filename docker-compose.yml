@@ -7,7 +7,7 @@ services:
       dockerfile: ./Dockerfile
     network_mode: "host"
     environment:
-      PATH: "mongodb://docker:docker@0.0.0.0:27017"
+      PATH: "mongodb://${EV_DB_USER}:${EV_DB_PASS}@0.0.0.0:27017"
       DB_USER: ${EV_DB_USER}
       DB_PASS: ${EV_DB_PASS}
       DB_NAME: ${EV_DB_NAME}
@@ -21,8 +21,8 @@ services:
     volumes:
       - db-data:/var/lib/mongodb/data
     environment:
-      MONGO_INITDB_ROOT_USERNAME: docker
-      MONGO_INITDB_ROOT_PASSWORD: docker
+      MONGO_INITDB_ROOT_USERNAME: ${EV_DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${EV_DB_PASS}
     restart: always
 
 volumes:
