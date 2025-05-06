@@ -7,7 +7,7 @@ services:
       dockerfile: ./Dockerfile
     network_mode: "host"
     environment:
-      PATH: "mongodb://${EV_DB_USER}:${EV_DB_PASS}@0.0.0.0:27017"
+      PATH: ${EV_DB_PATH}
       DB_USER: ${EV_DB_USER}
       DB_PASS: ${EV_DB_PASS}
       DB_NAME: ${EV_DB_NAME}
