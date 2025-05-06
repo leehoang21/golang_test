@@ -28,7 +28,7 @@ func (p TaskStatusType) String() string {
 func (p TaskStatusType) Val() string {
 	return []string{
 		"pending",
-		"in_progress",
+		"progress",
 		"completed",
 		"undefined",
 	}[p]

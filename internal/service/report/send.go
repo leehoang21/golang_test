@@ -10,9 +10,9 @@ import (
 )
 
 func (s *reportService) GenerateMorningReport(ctx context.Context) (string, error) {
-	input := filter.TaskListParams{}
+	input := filter.NewTaskListPrams()
 	var res []models.Task
-	var err = s.taskRepo.R_Search(ctx, &input, &res)
+	var err = s.taskRepo.R_Search(ctx, input, &res)
 	if err != nil {
 		return "", err
 	}
