@@ -6,10 +6,16 @@ import (
 )
 
 type Config struct {
-	Port string `env:"EV_SV_PORT"`
-	Mode string `env:"GIN_MODE" envDefault:"debug"`
 	DB
 	TelegramConfig
+	GinConfig
+}
+
+type GinConfig struct {
+	Mode string `env:"GIN_MODE" envDefault:"debug"`
+	Port string `env:"EV_SV_PORT" envDefault:"8080"`
+	Cert string `env:"EV_SV_CERT" envDefault:""`
+	Key  string `env:"EV_SV_KEY" envDefault:""`
 }
 
 type DB struct {

@@ -21,6 +21,7 @@ import (
 	"base/internal/utils/web"
 	"context"
 	"github.com/gin-gonic/gin"
+	"log"
 )
 
 // @title           DJM API
@@ -111,14 +112,20 @@ func main() {
 	}
 
 	//set gin mode
-	if cf.Mode == "" {
+	if cf.GinConfig.Mode == "" {
 		cf.Mode = gin.DebugMode
 	}
 	gin.SetMode(cf.Mode)
 	routerApi := rounterFuncs.Create(mid)
 
-	err := routerApi.Run(":" + cf.Port)
+	//set certificate
+	var err error
+	if cf.GinConfig.Cert == "" || cf.GinConfig.Key == "" {
+		err = routerApi.Run(":" + cf.Port)
+	} else {
+		err = routerApi.RunTLS(":"+cf.Port, cf.GinConfig.Cert, cf.GinConfig.Key)
+	}
 	if err != nil {
-		return
+		log.Fatal(err)
 	}
 }
