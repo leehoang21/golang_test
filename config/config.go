@@ -7,6 +7,7 @@ import (
 
 type Config struct {
 	Port string `env:"EV_SV_PORT"`
+	Mode string `env:"GIN_MODE" envDefault:"debug"`
 	DB
 	TelegramConfig
 }

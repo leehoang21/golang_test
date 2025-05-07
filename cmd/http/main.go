@@ -2,6 +2,8 @@ package main
 
 import (
 	"base/config"
+	_ "base/docs"
+	"base/internal/connection"
 	"base/internal/handler"
 	_ "base/internal/init"
 	"base/internal/notification"
@@ -18,9 +20,7 @@ import (
 	"base/internal/utils/validator"
 	"base/internal/utils/web"
 	"context"
-
-	_ "base/docs"
-	"base/internal/connection"
+	"github.com/gin-gonic/gin"
 )
 
 // @title           DJM API
@@ -110,9 +110,14 @@ func main() {
 		SendTelegramReportHandler: handlerReport.SendTelegramReportHandler,
 	}
 
+	//set gin mode
+	if cf.Mode == "" {
+		cf.Mode = gin.DebugMode
+	}
+	gin.SetMode(cf.Mode)
 	routerApi := rounterFuncs.Create(mid)
 
-	err := routerApi.Run()
+	err := routerApi.Run(":" + cf.Port)
 	if err != nil {
 		return
 	}
